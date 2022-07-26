@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=downsample_test
+#SBATCH --job-name=fastqc
 #SBATCH --partition=savio2
 #SBATCH --qos=savio_normal
 #SBATCH --nodes=1
