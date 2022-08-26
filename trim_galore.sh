@@ -20,5 +20,6 @@ bisulfite='SRR17281088 SRR17281087 SRR17281086 SRR17281085'
 cd /global/scratch/users/chandlersutherland/e14/bs_fastq_files/williams/
 
 for f in $bisulfite
-	do 
-	$TRIM_DIR/trim_galore -o $OUT_DIR --fastqc --illumina --paired_file "${f}"_1.fastq "${f}"_2.fastq 
+do 
+   $TRIM_DIR/trim_galore -o $OUT_DIR --fastqc --illumina --paired_file "${f}"_1.fastq "${f}"_2.fastq
+done 
