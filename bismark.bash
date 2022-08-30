@@ -19,17 +19,15 @@ OUTPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark
 BISULFITE='SRR17281088 SRR17281087 SRR17281086 SRR17281085'
 
 #initialize a csv of file names for each mates to pass to bismark for williams paired end files 
-cd $SCRATCH/e14/trim_williams/
-
-rm mates* 
+cd $SCRATCH/e14/bs_fastq_files/williams
 
 touch mates_1.csv 
 touch mates_2.csv 
 
 for f in $BISULFITE 
 	do 
-	echo -n /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_1_val_1.fq, >> mates_1.csv 
-	echo -n /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_2_val_2.fq, >> mates_2.csv
+	echo -n /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_1.fastq, >> mates_1.csv 
+	echo -n /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_2.fastq, >> mates_2.csv
 done 
 
 MATES1=$(cat mates_1.csv)
