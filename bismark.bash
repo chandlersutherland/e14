@@ -32,9 +32,12 @@ for f in $BISULFITE
 	echo -n /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_2_val_2.fq, >> mates_2.csv
 done 
 
+MATES1=$(cat mates_1.csv)
+MATES2=$(cat mates_2.csv)
+
 #run bismark paired end for williams data
 cd $BISMARK
-./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 -1 $SCRATCH/e14/trim_williams/mates_1.csv -2 $SCRATCH/e14/trim_williams/mates_2.csv
+./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 -1 $MATES1 -2 $MATES2
 
 #run single end for 1001 genomes 
 #./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 /global/scratch/users/chandlersutherland/e14/bs_fastq_files/ecker/SRR771698.fastq
