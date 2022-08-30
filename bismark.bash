@@ -21,13 +21,15 @@ BISULFITE='SRR17281088 SRR17281087 SRR17281086 SRR17281085'
 #initialize a csv of file names for each mates to pass to bismark for williams paired end files 
 cd $SCRATCH/e14/trim_williams/
 
+rm mates* 
+
 touch mates_1.csv 
 touch mates_2.csv 
 
 for f in $BISULFITE 
 	do 
-	echo ${f}_1_val_1.fq, >> mates_1.csv 
-	echo ${f}_2_val_2.fq, >> mates_2.csv
+	echo /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_1_val_1.fq, >> mates_1.csv 
+	echo /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_2_val_2.fq, >> mates_2.csv
 done 
 
 #run bismark paired end for williams data
@@ -35,4 +37,4 @@ cd $BISMARK
 ./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 -1 $SCRATCH/e14/trim_williams/mates_1.csv -2 $SCRATCH/e14/trim_williams/mates_2.csv
 
 #run single end for 1001 genomes 
-./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 /global/scratch/users/chandlersutherland/e14/bs_fastq_files/ecker/SRR771698.fastq
+#./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 /global/scratch/users/chandlersutherland/e14/bs_fastq_files/ecker/SRR771698.fastq
