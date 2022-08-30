@@ -16,10 +16,10 @@ module load samtools
 BISMARK=/global/home/users/chandlersutherland/programs/Bismark-0.23.0
 ARAPORT11=/global/scratch/users/chandlersutherland/phytozome/Athaliana/Araport11/assembly
 
-cd $BISMARK
+cd $SCRATCH
 for f in /global/scratch/users/chandlersutherland/e14/trim_williams/*.fq
 	do
-	./bismark --genome $ARAPORT11  $f 
+	.$BISMARK/bismark --genome $ARAPORT11  $f 
 done
 
-./bismark --genome $ARAPORT11 /global/scratch/users/chandlersutherland/e14/bs_fastq_files/ecker/SRR771698.fastq
+.$BISMARK/bismark --genome $ARAPORT11 /global/scratch/users/chandlersutherland/e14/bs_fastq_files/ecker/SRR771698.fastq
