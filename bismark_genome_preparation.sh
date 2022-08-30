@@ -17,4 +17,4 @@ BISMARK=/global/home/users/chandlersutherland/programs/Bismark-0.23.0
 ARAPORT11=/global/scratch/users/chandlersutherland/phytozome/Athaliana/Araport11/assembly
 
 cd $BISMARK
-./bismark_genome_preparation --verbose --bowtie2 --path_to_aligner /global/home/groups/consultsw/sl-7.x86_64/modules/bowtie2/2.3.4.1/bowtie2 $ARAPORT11
+./bismark_genome_preparation --verbose --bowtie2 --path_to_aligner /global/home/groups/consultsw/sl-7.x86_64/modules/bowtie2/2.3.4.1 $ARAPORT11
