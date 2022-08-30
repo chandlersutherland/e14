@@ -28,8 +28,8 @@ touch mates_2.csv
 
 for f in $BISULFITE 
 	do 
-	echo /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_1_val_1.fq, >> mates_1.csv 
-	echo /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_2_val_2.fq, >> mates_2.csv
+	echo -n /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_1_val_1.fq, >> mates_1.csv 
+	echo -n /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_2_val_2.fq, >> mates_2.csv
 done 
 
 #run bismark paired end for williams data
