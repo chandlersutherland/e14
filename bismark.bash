@@ -4,7 +4,7 @@
 #SBATCH --qos=savio_normal
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=24
-#SBATCH --time=06:00:00
+#SBATCH --time=04:00:00
 #SBATCH --mail-user=chandlersutherland@berkeley.edu
 #SBATCH --mail-type=ALL
 #SBATCH --error=/global/home/users/chandlersutherland/slurm_stderr/slurm-%j.out
@@ -26,8 +26,8 @@ touch mates_2.csv
 
 for f in $BISULFITE 
 	do 
-	echo -n /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_1.fastq, >> mates_1.csv 
-	echo -n /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_2.fastq, >> mates_2.csv
+	echo -n /global/scratch/users/chandlersutherland/e14/bs_fastq_files/williams/${f}_1.fastq, >> mates_1.csv 
+	echo -n /global/scratch/users/chandlersutherland/e14/bs_fastq_files/williams/${f}_2.fastq, >> mates_2.csv
 done 
 
 MATES1=$(cat mates_1.csv)
