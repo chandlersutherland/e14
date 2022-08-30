@@ -26,8 +26,8 @@ touch mates_2.csv
 
 for f in $BISULFITE 
 	do 
-	echo -n /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_1.fastq, >> mates_1.csv 
-	echo -n /global/scratch/users/chandlersutherland/e14/trim_williams/${f}_2.fastq, >> mates_2.csv
+	echo -n /global/scratch/users/chandlersutherland/e14/bs_fastq_files/williams/${f}_1.fastq, >> mates_1.csv 
+	echo -n /global/scratch/users/chandlersutherland/e14/bs_fastq_files/williams/${f}_2.fastq, >> mates_2.csv
 done 
 
 MATES1=$(cat mates_1.csv)
