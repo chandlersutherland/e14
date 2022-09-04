@@ -14,12 +14,12 @@ module load cutadapt
 module load fastqc 
 
 TRIM_DIR=/global/home/users/chandlersutherland/programs/TrimGalore-0.6.6
-OUT_DIR=/global/scratch/users/chandlersutherland/e14/trim_williams
-bisulfite='SRR17281088 SRR17281087 SRR17281086 SRR17281085'
+OUT_DIR=/global/scratch/users/chandlersutherland/e14/trim_williams/rna/
+rna='SRR17281236 SRR17281235 SRR17281234 SRR17281233'
 
-cd /global/scratch/users/chandlersutherland/e14/bs_fastq_files/williams/
+cd /global/scratch/users/chandlersutherland/e14/rna_fastq_files/williams/
 
-for f in $bisulfite
+for f in $rna
 do 
-   $TRIM_DIR/trim_galore -o $OUT_DIR --fastqc --illumina --paired "${f}"_1.fastq "${f}"_2.fastq
+   $TRIM_DIR/trim_galore -o $OUT_DIR --fastqc --illumina "${f}".fastq 
 done 
