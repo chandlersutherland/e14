@@ -19,23 +19,23 @@ OUTPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark
 BISULFITE='SRR17281088 SRR17281087 SRR17281086 SRR17281085'
 
 #initialize a csv of file names for each mates to pass to bismark for williams paired end files 
-cd $SCRATCH/e14/bs_fastq_files/williams
+#cd $SCRATCH/e14/bs_fastq_files/williams
 
-touch mates_1.csv 
-touch mates_2.csv 
+#touch mates_1.csv 
+#touch mates_2.csv 
 
-for f in $BISULFITE 
-	do 
-	echo -n /global/scratch/users/chandlersutherland/e14/bs_fastq_files/williams/${f}_1.fastq, >> mates_1.csv 
-	echo -n /global/scratch/users/chandlersutherland/e14/bs_fastq_files/williams/${f}_2.fastq, >> mates_2.csv
-done 
+#for f in $BISULFITE 
+#	do 
+#	echo -n /global/scratch/users/chandlersutherland/e14/bs_fastq_files/williams/${f}_1.fastq, >> mates_1.csv 
+#	echo -n /global/scratch/users/chandlersutherland/e14/bs_fastq_files/williams/${f}_2.fastq, >> mates_2.csv
+#done 
 
-MATES1=$(cat mates_1.csv)
-MATES2=$(cat mates_2.csv)
+#MATES1=$(cat mates_1.csv)
+#MATES2=$(cat mates_2.csv)
 
 #run bismark paired end for williams data
 cd $BISMARK
-./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 -1 $MATES1 -2 $MATES2
+#./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 -1 $MATES1 -2 $MATES2
 
 #run single end for 1001 genomes 
-#./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 /global/scratch/users/chandlersutherland/e14/bs_fastq_files/ecker/SRR771698.fastq
+./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 /global/scratch/users/chandlersutherland/e14/bs_fastq_files/ecker/SRR771698.fastq
