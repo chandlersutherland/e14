@@ -22,11 +22,17 @@ INPUT_DIR=/global/scratch/users/chandlersutherland/e14
 cd $BISMARK
 
 #test 1: do single end reads from williams improve mapping efficiency?
-#test 1.1 on trim galore reads 
-#./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 $INPUT_DIR/trim_williams/SRR17281085_1_val_1.fq
+#test 1.1 on trim galore reads R2 directional 
+./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 $INPUT_DIR/trim_williams/SRR17281085_2_val_2.fq
+
+#R1 nondirectional 
+./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 --non_directional $INPUT_DIR/trim_williams/SRR17281085_1_val_1.fq
+
+#R2 nondirectional
+./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 --non_directional $INPUT_DIR/trim_williams/SRR17281085_2_val_2.fq
 
 #test 1.2 on not trimmed reads 
 #./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 $INPUT_DIR/bs_fastq_files/williams/SRR17281085_1.fastq
 
 #test 2: was it my weird mates file input?
-./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR --non_directional -p 4 -1 $INPUT_DIR/trim_williams/SRR17281085_1_val_1.fq -2 $INPUT_DIR/trim_williams/SRR17281085_2_val_2.fq
+#./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR --non_directional -p 4 -1 $INPUT_DIR/trim_williams/SRR17281085_1_val_1.fq -2 $INPUT_DIR/trim_williams/SRR17281085_2_val_2.fq
