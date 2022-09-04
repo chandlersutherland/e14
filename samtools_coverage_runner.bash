@@ -15,9 +15,9 @@ module load samtools/1.14
 
 cd $SCRATCH/e14/bismark
 
-echo 'rname  startpos        endpos  numreads        covbases        coverage        meandepth       meanbaseq       meanmapq' > coverage.tsv 
+BISMARK_FILE=/global/scratch/users/chandlersutherland/e14/bismark/SRR771698_bismark_bt2_sort.bam
 
-python $HOME/e14/samtools_coverage.py 
+python $HOME/e14/samtools_coverage.py ${BISMARK_FILE}
 
-sed '/^#/d' coverage.tsv > coverage.tsv 
+#sed '/^#/d' coverage.tsv > coverage.tsv 
 
