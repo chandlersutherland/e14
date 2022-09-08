@@ -23,7 +23,7 @@ cd $BISMARK
 
 #test 1: do single end reads from williams improve mapping efficiency?
 #test 1.1 on trim galore reads R2 directional 
-./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 $INPUT_DIR/trim_williams/SRR17281085_2_val_2.fq
+#./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 $INPUT_DIR/trim_williams/SRR17281085_2_val_2.fq
 
 #R1 nondirectional 
 ./bismark --genome $ARAPORT11 --temp_dir $SCRATCH --output_dir $OUTPUT_DIR -p 4 --non_directional $INPUT_DIR/trim_williams/SRR17281085_1_val_1.fq
