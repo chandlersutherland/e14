@@ -16,7 +16,8 @@ source activate e14
 GENOME_DIR_WILLIAMS=/global/scratch/users/chandlersutherland/phytozome/Athaliana/Araport11/assembly/STAR_genome_williams
 GENOME_DIR_ECKER=/global/scratch/users/chandlersutherland/phytozome/Athaliana/Araport11/assembly/STAR_genome_ecker
 ECKER=/global/scratch/users/chandlersutherland/e14/rna_fastq_files/ecker
-WILLIAMS=/global/scratch/users/chandlersutherland/e14/trim_williams/rna
+WILLIAMS=/global/scratch/users/chandlersutherland/e14/rna_fastq_files/williams
+WILLIAMS_TRIMMED=/global/scratch/users/chandlersutherland/e14/trim_williams/rna
 OUTPUT=/global/scratch/users/chandlersutherland/e14/STAR_output
 
 #start with ecker 
@@ -25,12 +26,22 @@ OUTPUT=/global/scratch/users/chandlersutherland/e14/STAR_output
 #echo 'ecker finished'
 
 #move to williams 
-cd $WILLIAMS
+
 
 echo 'starting williams'
 #didn't work, need to create basename variable in for loop for output prefix 
 RNA='SRR17281233  SRR17281234  SRR17281235  SRR17281236'
 
+cd $WILLIAMS
+for file in $RNA
+do 
+	BASENAME=$(basename $file .fastq)
+	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${OUTPUT}"/"${BASENAME}"_ --readFilesIn ${file}
+done 
+
+echo 'finished!' 
+
+cd $WILLIAMS_TRIMMED
 for file in $RNA
 do 
 	BASENAME=$(basename $file)
@@ -38,4 +49,3 @@ do
 done 
 
 echo 'finished!' 
-
