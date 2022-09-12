@@ -4,7 +4,7 @@
 #SBATCH --qos=savio_normal
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=24
-#SBATCH --time=03:00:00
+#SBATCH --time=00:20:00
 #SBATCH --mail-user=chandlersutherland@berkeley.edu
 #SBATCH --mail-type=ALL
 #SBATCH --error=/global/home/users/chandlersutherland/slurm_stderr/slurm-%j.out
@@ -17,10 +17,10 @@ GENOME_DIR_WILLIAMS=/global/scratch/users/chandlersutherland/phytozome/Athaliana
 GENOME_DIR_ECKER=/global/scratch/users/chandlersutherland/phytozome/Athaliana/Araport11/assembly/STAR_genome_ecker
 ECKER=/global/scratch/users/chandlersutherland/e14/rna_fastq_files/ecker
 WILLIAMS=/global/scratch/users/chandlersutherland/e14/rna_fastq_files/williams
-OUTPUT=/global/scratch/users/chandlersutherland/e14/STAR_output
+OUTPUT=/global/scratch/users/chandlersutherland/e14/STAR_output/
 
 #start with ecker 
-STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_ECKER --outFileNamePrefix $OUTPUT --readFilesIn $ECKER/SRR3465232_1.fastq $ECKER/SRR3465232_2.fastq
+STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_ECKER --outFileNamePrefix $OUTPUT/SRR3465232_ --readFilesIn $ECKER/SRR3465232_1.fastq $ECKER/SRR3465232_2.fastq
 
 echo 'ecker finished'
 
@@ -30,7 +30,7 @@ cd $WILLIAMS
 echo 'starting williams'
 for file in $WILLIAMS 
 do 
-	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix $OUTPUT --readFilesIn $file
+	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${OUTPUT}"/"${file}" --readFilesIn $file
 done 
 
 echo 'finished!' 
