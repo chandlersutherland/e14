@@ -20,17 +20,19 @@ WILLIAMS=/global/scratch/users/chandlersutherland/e14/rna_fastq_files/williams
 OUTPUT=/global/scratch/users/chandlersutherland/e14/STAR_output
 
 #start with ecker 
-STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_ECKER --outFileNamePrefix $OUTPUT/SRR3465232_ --readFilesIn $ECKER/SRR3465232_1.fastq $ECKER/SRR3465232_2.fastq
+#STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_ECKER --outFileNamePrefix $OUTPUT/SRR3465232_ --readFilesIn $ECKER/SRR3465232_1.fastq $ECKER/SRR3465232_2.fastq
 
-echo 'ecker finished'
+#echo 'ecker finished'
 
 #move to williams 
 cd $WILLIAMS
 
 echo 'starting williams'
+#didn't work, need to create basename variable in for loop for output prefix 
 for file in $WILLIAMS 
 do 
-	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${OUTPUT}"/"${file}"_ --readFilesIn $file
+	BASENAME=$(basename ${file})
+	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${OUTPUT}"/"${BASENAME}"_ --readFilesIn $file
 done 
 
 echo 'finished!' 
