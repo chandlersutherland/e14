@@ -13,7 +13,7 @@
 module load python 
 source activate e14
 
-#The s
+#The sjdb overhang is different depending on the read length, so making two separate genome directories 
 GENOME_DIR_WILLIAMS=/global/scratch/users/chandlersutherland/phytozome/Athaliana/Araport11/assembly/STAR_genome_williams
 GENOME_DIR_ECKER=/global/scratch/users/chandlersutherland/phytozome/Athaliana/Araport11/assembly/STAR_genome_ecker
 FASTA_FILE=/global/scratch/users/chandlersutherland/phytozome/Athaliana/Araport11/assembly/Athaliana_447_TAIR10.fa
