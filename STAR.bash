@@ -29,9 +29,11 @@ cd $WILLIAMS
 
 echo 'starting williams'
 #didn't work, need to create basename variable in for loop for output prefix 
-for file in $WILLIAMS 
+RNA='SRR17281233.fastq  SRR17281234.fastq  SRR17281235.fastq  SRR17281236.fastq'
+
+for file in $RNA
 do 
-	BASENAME=$(basename ${file})
+	BASENAME=$(basename $file .fastq)
 	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${OUTPUT}"/"${BASENAME}"_ --readFilesIn $file
 done 
 
