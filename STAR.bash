@@ -4,7 +4,7 @@
 #SBATCH --qos=savio_normal
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=24
-#SBATCH --time=00:06:00
+#SBATCH --time=00:12:00
 #SBATCH --mail-user=chandlersutherland@berkeley.edu
 #SBATCH --mail-type=ALL
 #SBATCH --error=/global/home/users/chandlersutherland/slurm_stderr/slurm-%j.out
@@ -32,12 +32,12 @@ echo 'starting williams'
 #didn't work, need to create basename variable in for loop for output prefix 
 RNA='SRR17281233  SRR17281234  SRR17281235  SRR17281236'
 
-cd $WILLIAMS
-for file in $RNA
-do 
-	BASENAME=$(basename $file .fastq)
-	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${OUTPUT}"/"${BASENAME}"_ --readFilesIn ${file}
-done 
+#cd $WILLIAMS
+#for file in $RNA
+#do 
+#	BASENAME=$(basename $file .fastq)
+#	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${OUTPUT}"/"${BASENAME}"_ --readFilesIn ${file}.fastq
+#done 
 
 echo 'finished!' 
 
@@ -45,7 +45,7 @@ cd $WILLIAMS_TRIMMED
 for file in $RNA
 do 
 	BASENAME=$(basename $file)
-	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${OUTPUT}"/"${BASENAME}"_trimmed --readFilesIn ${file}_trimmed.fq
+	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${OUTPUT}"/"${BASENAME}"_trimmed_ --readFilesIn ${file}_trimmed.fq
 done 
 
 echo 'finished!' 
