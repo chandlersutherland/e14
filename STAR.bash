@@ -36,16 +36,16 @@ cd $WILLIAMS
 for file in $RNA
 do 
 	BASENAME=$(basename $file .fastq)
-	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${OUTPUT}"/"${BASENAME}"_ --readFilesIn ${file}
+	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${OUTPUT}"/"${BASENAME}"_ --readFilesIn ${file}.fastq
 done 
 
 echo 'finished!' 
-
-cd $WILLIAMS_TRIMMED
-for file in $RNA
-do 
-	BASENAME=$(basename $file)
-	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${OUTPUT}"/"${BASENAME}"_trimmed --readFilesIn ${file}_trimmed.fq
-done 
+#
+#cd $WILLIAMS_TRIMMED
+#for file in $RNA
+#do 
+#	BASENAME=$(basename $file)
+#	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${OUTPUT}"/"${BASENAME#}"_trimmed --readFilesIn ${file}_trimmed.fq
+#done 
 
 echo 'finished!' 
