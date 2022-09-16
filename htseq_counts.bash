@@ -22,10 +22,7 @@ cd $INPUT
 for f in *.bam
 do 
 	BASENAME=$(basename $f .out.bam) 
-	htseq-count -r pos -s yes \
-		-c $OUTPUT/$BASENAME.txt 
-		$f \
-		/global/scratch/users/chandlersutherland/Athaliana/Araport11_GTF_genes_transposons.current.gtf
+	htseq-count -r pos -s yes -c $OUTPUT/$BASENAME.txt $f /global/scratch/users/chandlersutherland/Athaliana/Araport11_GTF_genes_transposons.current.gtf
 
 done
 echo 'finished!' 
