@@ -24,5 +24,5 @@ for f in $BISULFITE
 do 
 	./deduplicate_bismark -p \
 		--output_dir  $SCRATCH/e14/bismark/deduplicate_bismark/ \
-		/global/scratch/users/chandlersutherland/e14/bismark/bam_files/${f}_1_bismark_bt2_pe.bam
+		/global/scratch/users/chandlersutherland/e14/bismark/bam_files/${f}_1_val_1_bismark_bt2_pe.bam
 done 
