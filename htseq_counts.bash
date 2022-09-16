@@ -23,7 +23,7 @@ cd $INPUT
 f='SRR17281233_Aligned.out.bam'
 #do 
 	BASENAME=$(basename $f _Aligned.out.bam) 
-	htseq-count -r pos -s yes -c $OUTPUT/$BASENAME.txt $f /global/scratch/users/chandlersutherland/Athaliana/Araport11_GTF_genes_transposons.current.gtf
+	htseq-count -r pos -s yes $f /global/scratch/users/chandlersutherland/Athaliana/Araport11_GTF_genes_transposons.current.gtf
 
 #done
 echo 'finished!' 
