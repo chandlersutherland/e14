@@ -7,8 +7,8 @@ import numpy as np
 directory=str(sys.argv[1])
 files = glob.glob(os.path.join(directory, "*.txt"))
 positions=pd.read_csv('/global/home/users/chandlersutherland/e14/data/all_NLR.bed', sep='\t', header=0, names=['Chromosome', 'start', 'end', 'gene', 'strand'], index_col=False)
-#define output path!
 
+#read in all the files into a list of dataframes 
 dfs = []
 for f in files:
     print('Location:', f)
@@ -22,6 +22,7 @@ for f in files:
     df['NLR']= np.nan
     dfs.append(df)
 
+#define this horrible function, that determines if the cytosine is within an NLR, and outputs just those files
 def methylation_counter(extraction, positions):
     for j in range(0, len(extraction)):
         for i in range(0, len(positions)):
@@ -32,10 +33,14 @@ def methylation_counter(extraction, positions):
     
     return extraction.dropna()
                  
-
+#apply the function to the dfs
 all = [methylation_counter(i, positions) for i in dfs]
+
+#concatenate, split up the hv/nonhv NLRs
 concat = pd.concat(all).sort_values(['accession', 'context', 'HV'])
 concat[['NLR', 'HV']] = test_concat.NLR.str.split('_', expand = True)
 
+#write to a large but hopefully not as large txt file 
 concat.to_csv(os.path.join(directory, '/summary_reports/all_NLR_cytosines.txt'), sep="\t")
 
+#next step would be to aggregate by strand counts, but that is just going to take some playing around 
