@@ -13,4 +13,6 @@
 module load python 
 source activate e14
 
-python $HOME/e14/methylation_coverage.py '/global/scratch/users/chandlersutherland/e14/bismark/extraction'
+INPUT_DIR=$SCRATCH/e14/bismark/extraction
+
+parallel -j $SLURM_CPUS_ON_NODE python $HOME/e14/methylation_coverage2.py {} ';' echo 'finished' {} ::: $INPUT_DIR/*.txt 
