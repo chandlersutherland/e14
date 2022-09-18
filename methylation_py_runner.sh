@@ -16,4 +16,9 @@ source activate e14
 
 INPUT_DIR=$SCRATCH/e14/bismark/extraction
 
-parallel -j $SLURM_CPUS_ON_NODE python $HOME/e14/methylation_coverage2.py {} ';' echo 'finished' {} ::: $INPUT_DIR/*.txt 
+for f in $INPUT_DIR/*.txt
+do 
+	python $HOME/e14/methylation_coverage2.py $f
+	echo 'finished' $f 
+
+done 
