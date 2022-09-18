@@ -22,16 +22,16 @@ BISULFITE='SRR17281087 SRR17281086 SRR17281085'
 cd $BISMARK 
 
 #williams time 
-#for f in $BISULFITE
-#do 
-#	./bismark_methylation_extractor -p \
-#		--output  $OUTPUT_DIR \
-#		--ignore_r2 2 \
-#		--comprehensive \
-#		--parallel $SLURM_NTASKS \
-#		/global/scratch/users/chandlersutherland/e14/bismark/deduplicate_bismark/${f}_1_val_1_bismark_bt2_pe.deduplicated.bam
-#	echo "finished" $f 
-#done 
+for f in $BISULFITE
+do 
+	./bismark_methylation_extractor -p \
+		--output  $OUTPUT_DIR \
+		--ignore_r2 2 \
+		--comprehensive \
+		--parallel $SLURM_NTASKS \
+		/global/scratch/users/chandlersutherland/e14/bismark/deduplicate_bismark/${f}_1_val_1_bismark_bt2_pe.deduplicated.bam
+	echo "finished" $f 
+done 
 
 #ecker hehe. Keeping comprehensive for now  
 ./bismark_methylation_extractor -s \
