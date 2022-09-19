@@ -1,13 +1,26 @@
 library(polyester)
 library(Biostrings)
 
-fold_changes=matrix(c(1), nrow=335, ncol=1)
+#start with primary transcript 
+primary_fold_changes=matrix(c(1), nrow=27654, ncol=1)
+primary_fasta_file = '/global/scratch/users/chandlersutherland/Athaliana/Athaliana_447_Araport11.cds_primaryTranscriptOnly.fa'
+primary_fasta=readDNAStringSet(primary_fasta_file)
 
-fasta_file = '/global/scratch/users/chandlersutherland/e14/polyester/NLR_codingseq.fa'
-fasta=readDNAStringSet(fasta_file)
+primary_readspertx=rount(20* width(primary_fasta_file)/100)
 
-readspertx=rount(20* width(fasta_file)/100)
+simulate_experiment(primary_fasta_file, reads_per_transcript=primary_readspertx, 
+	num_reps=c(4), fold_changes=primary_fold_changes, 
+	readlen=50, paired=FALSE, 
+	outdir='global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_0929')
+	
+#then try all transcripts
+all_fold_change=matrix(c(1), nrow=48455, ncol=1)
+all_fasta_file = '/global/scratch/users/chandlersutherland/Athaliana/Athaliana_447_Araport11.cds.fa'
+all_fasta=readDNAStringSet(all_fasta_file)
 
-simulate_experiment(fasta_file, reads_per_transcript=readspertx, 
-	num_reps=c(10), fold_changes=fold_changes, 
-	outdir='global/scratch/users/chandlersutherland/e14/polyester/simulated_reads_0928')
+all_readspertx=rount(20* width(all_fasta_file)/100)
+
+simulate_experiment(all_fasta_file, reads_per_transcript=all_readspertx, 
+	num_reps=c(4), fold_changes=all_fold_changes, 
+	readlen=50, paired=FALSE, 
+	outdir='global/scratch/users/chandlersutherland/e14/polyester/all_simulated_reads_0929')
