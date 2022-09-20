@@ -22,7 +22,7 @@ cd $INPUT
 for f in *.bam
 do 
 	BASENAME=$(basename $f _Aligned.out.bam) 
-	htseq-count -r pos -s yes -c $OUTPUT/$BASENAME.tsv $f /global/scratch/users/chandlersutherland/Athaliana/all_NLR.gtf
+	htseq-count -r pos -s yes -c $OUTPUT/$BASENAME.tsv $f /global/scratch/users/chandlersutherland/Athaliana/GTFs/all_NLRs.gtf
 	echo 'finished ${BASENAME}' 
 done
 echo 'finished!' 
