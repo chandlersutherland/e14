@@ -14,4 +14,5 @@
 module load r
 module load r-packages
 
+cd $SCRATC
 Rscript /global/home/users/chandlersutherland/e14/simulate_experiment.r --no-save
