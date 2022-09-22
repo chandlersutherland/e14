@@ -4,7 +4,7 @@
 #SBATCH --qos=savio_normal
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=24
-#SBATCH --time=05:30:00
+#SBATCH --time=00:30:00
 #SBATCH --mail-user=chandlersutherland@berkeley.edu
 #SBATCH --mail-type=ALL
 #SBATCH --error=/global/home/users/chandlersutherland/slurm_stderr/slurm-%j.out
@@ -23,7 +23,7 @@ f='SRR3465232_Aligned.out.bam'
 #for f in *.bam
 #do 
 	BASENAME=$(basename $f _Aligned.out.bam) 
-	htseq-count -r pos -s yes -c $OUTPUT/$BASENAME.tsv $f /global/scratch/users/chandlersutherland/Athaliana/GTFs/all_NLRs.gtf
+	htseq-count -r pos -s yes -c $OUTPUT/${BASENAME}_all_features.tsv $f /global/scratch/users/chandlersutherland/Athaliana/GTFs/Araport11_GTF_genes_transposons.current.gtf
 	echo 'finished' ${BASENAME} 
 #done
 echo 'finished!' 
