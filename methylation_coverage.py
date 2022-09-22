@@ -2,6 +2,7 @@ import os
 import pandas as pd 
 import glob 
 import numpy as np 
+import sys
 
 #takes a directory path as an argument, and will evaluate all the txt files within for NLR methylation patterns 
 directory=str(sys.argv[1])
