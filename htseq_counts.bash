@@ -18,8 +18,8 @@ OUTPUT=/global/scratch/users/chandlersutherland/e14/STAR_output/htseq_count
 
 
 cd $INPUT 
-
-f='SRR3465232_Aligned.out.bam'
+#/global/scratch/users/chandlersutherland/e14/STAR_output/sort_index/SRR17281233_Aligned.out.bam
+f='SRR17281233_Aligned.out.bam'
 #for f in *.bam
 #do 
 	BASENAME=$(basename $f _Aligned.out.bam) 
