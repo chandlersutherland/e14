@@ -13,17 +13,17 @@
 module load python 
 source activate e14
 
-INPUT=/global/scratch/users/chandlersutherland/e14/STAR_output/sort_index
+INPUT=/global/scratch/users/chandlersutherland/e14/STAR_output/NLR_bam
 OUTPUT=/global/scratch/users/chandlersutherland/e14/STAR_output/htseq_count
 
 
 cd $INPUT 
-#/global/scratch/users/chandlersutherland/e14/STAR_output/sort_index/SRR17281233_Aligned.out.bam
-f='SRR17281233_Aligned.out.bam'
-#for f in *.bam
-#do 
-	BASENAME=$(basename $f _Aligned.out.bam) 
-	htseq-count -r pos -s yes -c $OUTPUT/${BASENAME}_all_features.tsv $f /global/scratch/users/chandlersutherland/Athaliana/GTFs/Araport11_GTF_genes_transposons.current.gtf
+
+for f in *.bam
+do 
+	BASENAME=$(basename $f _Aligned.out_NLRs.bam) 
+	htseq-count -r pos -s yes -c $OUTPUT/${BASENAME}_NLRs.tsv $f /global/scratch/users/chandlersutherland/Athaliana/GTFs/all_NLRs.gtf
 	echo 'finished' ${BASENAME} 
-#done
-echo 'finished!' 
+done
+echo 'finished!'
+
