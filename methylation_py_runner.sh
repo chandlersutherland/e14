@@ -9,6 +9,7 @@
 #SBATCH --time=10:00:00
 #SBATCH --error=/global/home/users/chandlersutherland/slurm_stderr/slurm-%j.out
 #SBATCH --output=/global/home/users/chandlersutherland/slurm_stdout/slurm-%j.out
+cd $SCRATCH
 
 module load python 
 source activate e14
