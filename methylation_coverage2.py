@@ -38,6 +38,7 @@ all[['NLR', 'HV']] = all.NLR.str.split('_', expand = True)
 
 print('writing out file')
 #write to a large but hopefully not as large txt file 
-concat.to_csv(os.path.join('/global/scratch/users/chandlersutherland/e14/bismark/extraction/summary_reports/', accession, '_all_NLR_cytosines.txt'), sep="\t")
+output='/global/scratch/users/chandlersutherland/e14/bismark/extraction/summary_reports/' + context + '_' + accession + '_all_NLR_cytosines.txt'
+all.to_csv(output, sep="\t")
 
 #next step would be to aggregate by strand counts, but that is just going to take some playing around 
