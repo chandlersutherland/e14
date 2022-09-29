@@ -14,4 +14,4 @@
 module load r
 module load r-packages
 
-R /global/home/users/chandlersutherland/e14/simulate_experiment.r
+Rscript /global/home/users/chandlersutherland/e14/simulate_experiment.r --no-save
