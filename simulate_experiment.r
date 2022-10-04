@@ -11,7 +11,7 @@ primary_readspertx=round(20* width(primary_fasta_file)/100)
 simulate_experiment(primary_fasta_file, reads_per_transcript=primary_readspertx, 
 	num_reps=c(4), fold_changes=primary_fold_changes, 
 	readlen=50, paired=FALSE, 
-	outdir='global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_0929')
+	outdir='/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1004')
 	
 #then try all transcripts
 all_fold_changes=matrix(c(1), nrow=48455, ncol=1)
@@ -23,4 +23,4 @@ all_readspertx=round(20* width(all_fasta_file)/100)
 simulate_experiment(all_fasta_file, reads_per_transcript=all_readspertx, 
 	num_reps=c(4), fold_changes=all_fold_changes, 
 	readlen=50, paired=FALSE, 
-	outdir='global/scratch/users/chandlersutherland/e14/polyester/all_simulated_reads_0929')
+	outdir='/global/scratch/users/chandlersutherland/e14/polyester/all_simulated_reads_1004')
