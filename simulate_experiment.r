@@ -23,4 +23,4 @@ all_readspertx=round(20* width(all_fasta_file)/100)
 simulate_experiment(all_fasta_file, reads_per_transcript=all_readspertx, 
 	num_reps=c(4), fold_changes=all_fold_changes, 
 	readlen=50, paired=FALSE, 
-	outdir='/global/scratch/users/chandlersutherland/e14/polyester/all_simulated_reads_1004')
+	outdir='/global/scratch/users/chandlersutherland/e14/polyester/all_simulated_reads_1004_alt')

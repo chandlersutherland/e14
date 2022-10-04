@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=simulate_experiment_runner
-#SBATCH --account=ac_kvkallow
-#SBATCH --partition=savio
+#SBATCH --account=fc_kvkallow
+#SBATCH --partition=savio2
 #SBATCH --qos=savio_normal
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=20
