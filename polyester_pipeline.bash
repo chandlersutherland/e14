@@ -30,21 +30,26 @@ STAR_OUTPUT=/global/scratch/users/chandlersutherland/e14/polyester/primary_simul
 
 #define star function, which takes in a file and writes the STAR output to the STAR_OUTPUT directory 
 STAR_RUN (){ 
-	BASENAME=$(basename $1 .fasta)
-	STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${STAR_OUTPUT}"/$BASENAME --readFilesIn $1
-	echo "finished" $BASENAME
+    GENOME_DIR_WILLIAMS=/global/scratch/users/chandlersutherland/phytozome/Athaliana/Araport11/assembly/STAR_genome_williams
+    STAR_OUTPUT=/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1004/STAR
+    BASENAME=$(basename $1 .fasta)
+    STAR --runThreadN $SLURM_NTASKS --genomeDir $GENOME_DIR_WILLIAMS --outFileNamePrefix "${STAR_OUTPUT}"/"${BASENAME}"_ --readFilesIn $1
+    echo "finished" $BASENAME
 }
 
 #HTCOUNT_RUN, which takes in a .sam file and produces a NLR-only htseq count file and then a all genome htseq-count file 
 COUNTS_OUTPUT=/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1004/htseq_counts
-HTCOUNT_RUN () { 
-	BASENAME=$(basename $1 .sam)
-	htseq-count -r pos -s yes -c $COUNTS_OUTPUT/${BASENAME}_NLRs.tsv $1 /global/scratch/users/chandlersutherland/Athaliana/GTFs/all_NLRs.gtf
-	htseq-count -r pos -s yes -c $COUNTS_OUTPUT/${BASENAME}.tsv $1 /global/scratch/users/chandlersutherland/Athaliana/GTFs/Araport11_GTF_genes_transposons.current.gtf
-	echo 'finished' ${BASENAME}
+HTCOUNT_RUN () {
+    COUNTS_OUTPUT=/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1004/htseq_counts
+    BASENAME=$(basename $1 .sam)
+    htseq-count -r pos -s yes -c $COUNTS_OUTPUT/${BASENAME}_NLRs.tsv $1 /global/scratch/users/chandlersutherland/Athaliana/GTFs/all_NLRs.gtf
+    htseq-count -r pos -s yes -c $COUNTS_OUTPUT/${BASENAME}.tsv $1 /global/scratch/users/chandlersutherland/Athaliana/GTFs/Araport11_GTF_genes_transposons.current.gtf
+    echo 'finished' ${BASENAME}
 }
 
 #apply STAR_RUN to the input files
+export -f STAR_RUN
+export -f HTCOUNT_RUN
 
 parallel STAR_RUN ::: $FILES 
 echo "finished STAR, moving on to htseq_counts" 
