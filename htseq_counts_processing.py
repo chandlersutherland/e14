@@ -9,12 +9,12 @@ hv_status = pd.DataFrame(columns=['Gene', 'HV'])
 hv_status[['Gene', 'HV']] = positions.gene.str.split('_', expand = True)
 
 
-input_path='/global/scratch/users/chandlersutherland/e14/STAR_output/htseq_count'
-output_path='/global/scratch/users/chandlersutherland/e14/STAR_output/htseq_count/summary_reports'
+input_path='/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1004/htseq_counts'
+output_path='/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1004/htseq_counts/summary_reports'
 htseq_counts = glob.glob(os.path.join(input_path, "*_NLRs.tsv"))
 
 dfs = []
-
+stats = []
 #load in the seqcounts across accessions, and sort the necessary information 
 for f in htseq_counts: 
     df= pd.read_csv(f, sep = '\t', names=['Gene', 'count'], index_col=False)
@@ -37,9 +37,7 @@ for f in htseq_counts:
 def merger2(depth, hv_status):
   counts = pd.merge(depth, hv_status)
   #return counts
-  return counts.groupby(['filename', 'HV']).agg(
-        mean_count=('count', 'mean'),
-  )
+  return counts.groupby(['filename', 'HV'])['count'].mean().reset_index()
   
 def zero_my_hero(depth, hv_status):
     zeros = pd.merge(depth, hv_status)
