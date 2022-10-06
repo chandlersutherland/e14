@@ -11,11 +11,11 @@
 
 #this script passes a bam file to the python script samtools_coverage, which outputs a file $BASENAME_clean_coverage.tsv which gives the mean depth over the NLRs
 #can easily be made into a for loop to pass multiple files through 
+#pass variable INPUT, which should have a directory of sam files ready for coverage processing 
 
 module load python
 module load samtools/1.14
 #very important to have this version 
-INPUT=/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1004/STAR
 
 cd $INPUT
 
@@ -44,7 +44,7 @@ rm *coverage.tsv
 #fun fun python?
 
 
-
+mkdir $INPUT/NLR_bam 
 #filter bam file by just NLRs, sort and index for IGV  
 cd $INPUT/sort_index/
 #untested 
