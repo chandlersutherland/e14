@@ -27,7 +27,7 @@ FILES=$(for f in *.fasta; do echo $f; done)
 #step 1: STAR 
 GENOME_DIR_WILLIAMS=/global/scratch/users/chandlersutherland/phytozome/Athaliana/Araport11/assembly/STAR_genome_williams
 STAR_OUTPUT=$INPUT/STAR
-mkdir STAR_OUTPUT
+mkdir $STAR_OUTPUT
 
 #define star function, which takes in a file and writes the STAR output to the STAR_OUTPUT directory 
 STAR_RUN (){ 
@@ -54,8 +54,8 @@ HTCOUNT_RUN () {
 export -f STAR_RUN
 export -f HTCOUNT_RUN
 
-parallel STAR_RUN ::: $FILES 
-echo "finished STAR, moving on to htseq_counts" 
+#parallel STAR_RUN ::: $FILES 
+#echo "finished STAR, moving on to htseq_counts" 
 
 parallel HTCOUNT_RUN ::: $STAR_OUTPUT/*.sam
 echo "finished HTCOUNT, ready for processing" 

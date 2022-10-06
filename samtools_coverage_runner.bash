@@ -17,7 +17,7 @@ module load python
 module load samtools/1.14
 #very important to have this version 
 
-cd $INPUT
+cd $1
 
 for file in *.sam
 do 
@@ -25,11 +25,11 @@ do
 	echo $BASENAME
 	#first, convert to bam, sort and index for samtools coverage to run appropriately 
 	samtools view -@ $SLURM_NTASKS -b $file |\
-	samtools sort -@ 20 - -o $INPUT/sort_index/${BASENAME}.bam
-	samtools index $INPUT/sort_index/${BASENAME}.bam
+	samtools sort -@ 20 - -o $1/sort_index/${BASENAME}.bam
+	samtools index $1/sort_index/${BASENAME}.bam
 done 
 
-cd $INPUT/sort_index/
+cd $1/sort_index/
 
 for file in *.bam 
 do 
@@ -38,21 +38,21 @@ do
 done 
 
 #clean up working directory 
-mv *_clean_coverage.tsv $INPUT/coverage
+mv *_clean_coverage.tsv $1/coverage
 rm *coverage.tsv 
 
 #fun fun python?
 
 
-mkdir $INPUT/NLR_bam 
+mkdir $1/NLR_bam 
 #filter bam file by just NLRs, sort and index for IGV  
-cd $INPUT/sort_index/
+cd $1/sort_index/
 #untested 
 for file in *.bam
 do 
 	BASENAME=$(basename ${file} .bam)
 	samtools view -b -h -L $HOME/e14/data/all_NLR.bed $file |\
-	samtools sort -@ 20 - -o $INPUT/NLR_bam/${BASENAME}_NLRs.bam 
-	samtools index $INPUT/NLR_bam/${BASENAME}_NLRs.bam
+	samtools sort -@ 20 - -o $1/NLR_bam/${BASENAME}_NLRs.bam 
+	samtools index $1/NLR_bam/${BASENAME}_NLRs.bam
 	
 done 
