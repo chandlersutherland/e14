@@ -14,7 +14,7 @@ output_path='/global/scratch/users/chandlersutherland/e14/polyester/primary_simu
 htseq_counts = glob.glob(os.path.join(input_path, "*_NLRs.tsv"))
 
 dfs = []
-
+stats = []
 #load in the seqcounts across accessions, and sort the necessary information 
 for f in htseq_counts: 
     df= pd.read_csv(f, sep = '\t', names=['Gene', 'count'], index_col=False)
@@ -37,9 +37,7 @@ for f in htseq_counts:
 def merger2(depth, hv_status):
   counts = pd.merge(depth, hv_status)
   #return counts
-  return counts.groupby(['filename', 'HV']).agg(
-        mean_count=('count', 'mean'),
-  )
+  return counts.groupby(['filename', 'HV'])['count'].mean().reset_index()
   
 def zero_my_hero(depth, hv_status):
     zeros = pd.merge(depth, hv_status)
