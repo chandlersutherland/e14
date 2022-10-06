@@ -11,6 +11,7 @@ primary_readspertx=1092
 simulate_experiment(primary_fasta_file, reads_per_transcript=primary_readspertx, 
 	num_reps=c(4), fold_changes=primary_fold_changes, 
 	readlen=50, paired=FALSE, 
+<<<<<<< Updated upstream
 	outdir='/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1004')
 	
 #then try all transcripts
@@ -24,3 +25,6 @@ simulate_experiment(primary_fasta_file, reads_per_transcript=primary_readspertx,
 #	num_reps=c(4), fold_changes=all_fold_changes, 
 #	readlen=50, paired=FALSE, 
 #	outdir='/global/scratch/users/chandlersutherland/e14/polyester/all_simulated_reads_1004_alt')
+=======
+	outdir='/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1006')
+>>>>>>> Stashed changes
