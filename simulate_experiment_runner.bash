@@ -17,4 +17,4 @@ module load r-packages
 cd $SCRATCH
 Rscript /global/home/users/chandlersutherland/e14/simulate_experiment.r --no-save
 
-bash $HOME/e14/polyester_pipeline.bash 
+#bash $HOME/e14/polyester_pipeline.bash 
