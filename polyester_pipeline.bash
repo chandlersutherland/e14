@@ -4,7 +4,7 @@
 #SBATCH --qos=savio_normal
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=24
-#SBATCH --time=03:30:00
+#SBATCH --time=00:40:00
 #SBATCH --mail-user=chandlersutherland@berkeley.edu
 #SBATCH --mail-type=ALL
 #SBATCH --error=/global/home/users/chandlersutherland/slurm_stderr/slurm-%j.out
@@ -40,7 +40,7 @@ STAR_RUN (){
 
 #HTCOUNT_RUN, which takes in a .sam file and produces a NLR-only htseq count file and then a all genome htseq-count file 
 COUNTS_OUTPUT=$INPUT/htseq_counts
-mkdir COUNTS_OUTPUT
+
 
 HTCOUNT_RUN () {
     COUNTS_OUTPUT=/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1006/htseq_counts
