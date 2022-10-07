@@ -13,17 +13,24 @@
 module load python 
 source activate e14
 
-INPUT=/global/scratch/users/chandlersutherland/e14/STAR_output/NLR_bam
+#define directory variables
+INPUT=/global/scratch/users/chandlersutherland/e14/STAR_output/raw_sam
 OUTPUT=/global/scratch/users/chandlersutherland/e14/STAR_output/htseq_count
 
+HTCOUNT_RUN () {
+    COUNTS_OUTPUT=/global/scratch/users/chandlersutherland/e14/STAR_output/htseq_count
+    BASENAME=$(basename $1 _Aligned.out.sam)
+    htseq-count -r pos -s yes -c $COUNTS_OUTPUT/${BASENAME}_NLRs.tsv $1 /global/scratch/users/chandlersutherland/Athaliana/GTFs/all_NLRs.gtf
+    htseq-count -r pos -s yes -c $COUNTS_OUTPUT/${BASENAME}.tsv $1 /global/scratch/users/chandlersutherland/Athaliana/GTFs/Araport11_GTF_genes_transposons.current.gtf
+    echo 'finished' ${BASENAME}
+}
 
-cd $INPUT 
+#apply STAR_RUN to the input files
+export -f STAR_RUN
+export -f HTCOUNT_RUN
 
-for f in *.bam
-do 
-	BASENAME=$(basename $f _Aligned.out_NLRs.bam) 
-	htseq-count -r pos -s yes -c $OUTPUT/${BASENAME}_NLRs.tsv $f /global/scratch/users/chandlersutherland/Athaliana/GTFs/all_NLRs.gtf
-	echo 'finished' ${BASENAME} 
-done
-echo 'finished!'
+#parallel STAR_RUN ::: $FILES 
+#echo "finished STAR, moving on to htseq_counts" 
 
+parallel HTCOUNT_RUN ::: $INPUT/*.sam
+echo "finished HTCOUNT, ready for processing" 
