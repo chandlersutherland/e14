@@ -9,8 +9,8 @@ hv_status = pd.DataFrame(columns=['Gene', 'HV'])
 hv_status[['Gene', 'HV']] = positions.gene.str.split('_', expand = True)
 
 
-input_path='/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1004/htseq_counts'
-output_path='/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1004/htseq_counts/summary_reports'
+input_path='/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1006/htseq_counts'
+output_path='/global/scratch/users/chandlersutherland/e14/polyester/primary_simulated_reads_1006/htseq_counts/summary_reports'
 htseq_counts = glob.glob(os.path.join(input_path, "*_NLRs.tsv"))
 
 dfs = []
