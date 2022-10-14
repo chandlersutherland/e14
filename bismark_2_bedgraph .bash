@@ -14,21 +14,20 @@ module load python
 source activate e14
 module load samtools
 
-BISMARK=/global/home/users/chandlersutherland/programs/Bismark-0.23.0
 OUTPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph
 
 #already ran SRR17281088 in interactive to test, so don't need it here 
-BISULFITE='SRR17281088 SRR17281087 SRR17281086 SRR17281085'
+BISULFITE='SRR17281087 SRR17281086 SRR17281085'
 
-cd $BISMARK 
+BISMARK_BEDGRAPH () {
+    OUTPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph
+	bismark2bedGraph --output $1.bed \
+	--dir $OUTPUT_DIR \
+	--CX \
+	/global/scratch/users/chandlersutherland/e14/bismark/extraction/NLR_only/*$1*
+    echo 'finished' $1
+}
 
-#williams time 
-for f in $BISULFITE
-do 
-	./bismark2bedGraph -p \
-		--output  $f.bed \
-		--CX_context \
-		/global/scratch/users/chandlersutherland/e14/bismark/extraction/NLR_only/*$f*
-	echo "finished" $f 
-done
+export -f $BISMARK_BEDGRAPH
 
+parallel BISMARK_BEDGRAPH ::: $BISULFITE
