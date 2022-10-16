@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=bismark_extractor
 #SBATCH --partition=savio2
-#SBATCH --qos=savio_normal
+#SBATCH --qos=savio_lowprio
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=24
 #SBATCH --time=01:00:00
@@ -16,18 +16,17 @@ module load samtools
 
 OUTPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph
 
-#already ran SRR17281088 in interactive to test, so don't need it here 
-BISULFITE='SRR17281087 SRR17281086 SRR17281085'
+BISULFITE='SRR1728108 SRR17281087 SRR17281086 SRR17281085'
 
 BISMARK_BEDGRAPH () {
     OUTPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph
 	bismark2bedGraph --output $1.bed \
 	--dir $OUTPUT_DIR \
-	--CX \
+	#--CX 
 	/global/scratch/users/chandlersutherland/e14/bismark/extraction/NLR_only/*$1*
     echo 'finished' $1
 }
 
-export -f $BISMARK_BEDGRAPH
+export -f BISMARK_BEDGRAPH
 
 parallel BISMARK_BEDGRAPH ::: $BISULFITE
