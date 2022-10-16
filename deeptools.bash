@@ -16,12 +16,13 @@ plotter() {
 	module load python/3.8.8
 	source activate e14_deeptools
 	#first, need to remove the track line from the bedgraph files, and save them as *.fixed.bed 
-	INPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph/
+	INPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph/NLR_only/CpG_only
 	grep -v track ${INPUT_DIR}/${1}.bed > ${INPUT_DIR}/${1}.fixed.bed
 
 	#now, convert to bigwig 
 	CHROM_SIZE=$SCRATCH/e14/deeptools/Athaliana_447_TAIR10.genome.sizes
-	bedGraphToBigWig ${INPUT_DIR}/${1}.fixed.bed $CHROM_SIZE $SCRATCH/e14/bismark/extraction/bigwig/${1}.bw
+	mkdir -p $SCRATCH/e14/bismark/extraction/bigwig/NLR_only/CpG_only
+	bedGraphToBigWig ${INPUT_DIR}/${1}.fixed.bed $CHROM_SIZE $SCRATCH/e14/bismark/extraction/bigwig/NLR_only/CpG_only/${1}.bw
 	
 	echo 'converted ${1} to bigwig' 
 	
@@ -32,14 +33,15 @@ plotter() {
 	module load python 
 	source activate e14 
 
-	density_file=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bigwig/${1}.bw 
+	density_file=$SCRATCH/e14/bismark/extraction/bigwig/NLR_only/CpG_only/${1}.bw 
 	THREADS=$SLURM_NTASKS
 	HV_BED=/global/home/users/chandlersutherland/e14/data/hv_NLR.bed
 	NONHV_BED=/global/home/users/chandlersutherland/e14/data/nonhv_NLR2.bed
-	DEEPTOOLS_DIR=$SCRATCH/e14/deeptools
-
+	DEEPTOOLS_DIR=$SCRATCH/e14/deeptools/NLR_only/CpG_only
+	mkdir -p $DEEPTOOLS_DIR
+	
 	#not currently working on interactive mode, but no error messages?
-	computeMatrix scale-regions -S /global/scratch/users/chandlersutherland/e14/bismark/extraction/bigwig/${1}.bw \
+	computeMatrix scale-regions -S $SCRATCH/e14/bismark/extraction/bigwig/NLR_only/CpG_only/${1}.bw \
 		-R ${HV_BED} ${NONHV_BED} \
 		--regionBodyLength 4000 \
 		-o ${DEEPTOOLS_DIR}/${1}.both.mat.gz
@@ -55,7 +57,7 @@ plotter() {
 
 export -f plotter
 
-BISULFITE='SRR17281087 SRR17281086 SRR17281088'
+BISULFITE='SRR17281087 SRR17281086 SRR17281088 SRR17281085'
 parallel plotter ::: $BISULFITE
 
 echo 'parallel finished'
