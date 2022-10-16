@@ -56,6 +56,6 @@ plotter() {
 export -f plotter
 
 BISULFITE='SRR17281087 SRR17281086 SRR17281088'
-parallel HTCOUNT_RUN ::: $BISULFITE
+parallel plotter ::: $BISULFITE
 
 echo 'parallel finished'
