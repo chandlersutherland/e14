@@ -18,6 +18,7 @@ module load samtools/1.14
 #very important to have this version 
 
 cd $1
+mkdir -p $1/sort_index
 
 for file in *.sam
 do 
@@ -38,13 +39,14 @@ do
 done 
 
 #clean up working directory 
+mkdir -p $1/coverage
 mv *_clean_coverage.tsv $1/coverage
 rm *coverage.tsv 
 
 #fun fun python?
 
 
-mkdir $1/NLR_bam 
+mkdir -p $1/NLR_bam 
 #filter bam file by just NLRs, sort and index for IGV  
 cd $1/sort_index/
 #untested 
