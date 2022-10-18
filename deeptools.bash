@@ -32,7 +32,7 @@ source activate e14
 density_file=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bigwig/${SAMPLE}.bw 
 THREADS=$SLURM_NTASKS
 HV_BED=/global/home/users/chandlersutherland/e14/data/hv_NLR.bed
-NONHV_BED=/global/home/users/chandlersutherland/e14/data/nonhv_NLR.bed
+NONHV_BED=/global/home/users/chandlersutherland/e14/data/nonhv_NLR2.bed
 DEEPTOOLS_DIR=$SCRATCH/e14/deeptools
 
 #first, compute hv with the density file (bw file) 
@@ -49,11 +49,11 @@ computeMatrix scale-regions -p $THREADS -S $density_file \
 plotProfile -m ${DEEPTOOLS_DIR}/${SAMPLE}.hv.mat.gz \
 			-out ${SAMPLE}.hv.pdf \
 			--numPlotsPerRow 1 
-			--plotTitle "${SAMPLE} HV" \
+			--plotTitle "${SAMPLE}" HV \
 			--outFileNameData ${DEEPTOOLS_DIR}/${SAMPLE}.hv.tab 
 			
 plotProfile -m ${DEEPTOOLS_DIR}/${SAMPLE}.nhv.mat.gz \
 			-out ${SAMPLE}.nhv.pdf \
 			--numPlotsPerRow 1 
-			--plotTitle "${SAMPLE} NHV" \
+			--plotTitle "${SAMPLE}" NHV \
 			--outFileNameData ${DEEPTOOLS_DIR}/${SAMPLE}.nhv.tab 
