@@ -17,13 +17,13 @@ module load samtools
 OUTPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph
 
 BISULFITE='SRR1728108 SRR17281087 SRR17281086 SRR17281085'
+mkdir -p /global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph/NLR_only/CpG_only
 
 BISMARK_BEDGRAPH () {
-    OUTPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph
+    OUTPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph/NLR_only/CpG_only
 	bismark2bedGraph --output $1.bed \
 	--dir $OUTPUT_DIR \
-	#--CX 
-	/global/scratch/users/chandlersutherland/e14/bismark/extraction/NLR_only/*$1*
+	/global/scratch/users/chandlersutherland/e14/bismark/extraction/NLR_only/CpG_*$1*
     echo 'finished' $1
 }
 
