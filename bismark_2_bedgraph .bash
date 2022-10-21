@@ -16,7 +16,7 @@ module load samtools
 
 OUTPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph
 
-BISULFITE='SRR1728108 SRR17281087 SRR17281086 SRR17281085'
+BISULFITE='SRR17281088 SRR17281087 SRR17281086 SRR17281085'
 mkdir -p /global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph/NLR_only/CpG_only
 
 BISMARK_BEDGRAPH () {
