@@ -20,6 +20,6 @@ GTF_FILE=/global/scratch/users/chandlersutherland/Athaliana/GTFs/Araport11_GTF_g
 FASTQ_FILE=/global/scratch/users/chandlersutherland/e14/rna_fastq_files/williams/SRR17281233.fastq
 GFF3=/global/scratch/users/chandlersutherland/phytozome/Athaliana/Araport11/assembly/Athaliana_447_Araport11.gene_exons.gff3
 
-rsem-prepare-reference --gff3 $GFF3 --bowtie --bowtie-path ~/.conda/envs/ecd14/bin/ $ARAPORT11_FA araport11
+rsem-prepare-reference --gff3 $GFF3 --bowtie --bowtie-path ~/.conda/envs/e14/bin $ARAPORT11_FA araport11
 
 rsem-calculate-expression $FASTQ_FILE araport11 SRR17281233 
