@@ -22,6 +22,7 @@ plotter() {
 	#now, convert to bigwig 
 	CHROM_SIZE=$SCRATCH/e14/deeptools/Athaliana_447_TAIR10.genome.sizes
 	mkdir -p $SCRATCH/e14/deeptools/cpg_highcov/bigwig/
+	sort -k1,1 -k2,2n ${1}
 	bedGraphToBigWig ${INPUT_DIR}/${1}_cpg_highcov.bed $CHROM_SIZE  $SCRATCH/e14/deeptools/cpg_highcov/bigwig/${1}.bw
 	
 	echo 'converted ${1} to bigwig' 
