@@ -14,19 +14,39 @@ module load python
 source activate e14
 module load samtools
 
-OUTPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph
-
-BISULFITE='SRR17281088 SRR17281087 SRR17281086 SRR17281085'
-mkdir -p /global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph/NLR_only/CpG_only
-
+#could not get this to work, no errors but would not save the file! 
 BISMARK_BEDGRAPH () {
-    OUTPUT_DIR=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph/NLR_only/CpG_only
-	bismark2bedGraph --output $1.bed \
-	--dir $OUTPUT_DIR \
-	/global/scratch/users/chandlersutherland/e14/bismark/extraction/NLR_only/CpG_*$1*
+	basename = $(basename $1)
+	bismark2bedGraph --output $basename.bed \
+	--dir $2 \
+	--cutoff 5 \
+	--CX \
+	$1
     echo 'finished' $1
 }
 
 export -f BISMARK_BEDGRAPH
 
-parallel BISMARK_BEDGRAPH ::: $BISULFITE
+CHG_in=$(for f in /global/scratch/users/chandlersutherland/e14/bismark/extraction/whole_genome/CHG*; do echo $f; done)
+CHG_out=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph/whole_genome/CHG_highcov
+
+CHH_in=$(for f in /global/scratch/users/chandlersutherland/e14/bismark/extraction/whole_genome/CHH*; do echo $f; done)
+CHH_out=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph/whole_genome/CHH_highcov
+
+parallel BISMARK_BEDGRAPH ::: $CHG_in ::: $CHG_out
+parallel BISMARK_BEDGRAPH ::: $CHH_in ::: $CHH_out
+
+BISMARK_BEDGRAPH_CpG () {
+	basename = $(basename $1)
+	bismark2bedGraph --output $basename.bed \
+	--dir $2 \
+	--cutoff 5 \
+	$1
+    echo 'finished' $1
+}
+
+export -f BISMARK_BEDGRAPH_CpG
+CpG_in=$(for f in /global/scratch/users/chandlersutherland/e14/bismark/extraction/whole_genome/CpG*; do echo $f; done)
+CpG_out=/global/scratch/users/chandlersutherland/e14/bismark/extraction/bedGraph/whole_genome/CpG_highcov
+
+parallel BISMARK_BEDGRAPH_CpG ::: $CpG_in ::: $CpG_out
