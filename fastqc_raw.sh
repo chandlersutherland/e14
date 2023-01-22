@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=fastqc
 #SBATCH --partition=savio2
-#SBATCH --qos=savio_normal
+#SBATCH --qos=savio_lowprio
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=24
 #SBATCH --time=02:00:00
@@ -13,9 +13,11 @@
 module load python 
 module load fastqc 
 
-SCRATCH_DIR=/global/scratch/users/chandlersutherland/e14/
-OUTPUT_DIR=$SCRATCH_DIR/fastqc_raw/
-cd $SCRATCH_DIR
+SCRATCH_DIR=/global/scratch/users/chandlersutherland/e14
+OUTPUT_DIR=$SCRATCH_DIR/fastqc_raw/drdd
+INPUT_DIR=$SCRATH_DIR/bs_fastq_files/williams_drdd
+
+cd $INPUT_DIR
 FILES=$(find . -type f -print)
 
 fastqc -o $OUTPUT_DIR $FILES 
