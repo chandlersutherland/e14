@@ -15,6 +15,8 @@
 module load python
 module load sra-tools
 
+SCRATCH_DIR='/global/scratch/users/chandlersutherland/e14'
+
 #download williams data 
 bisulfite='SRR17281073 SRR17281074 SRR17281075 SRR17281076'
 rna='SRR17281222 SRR17281223 SRR17281224'
