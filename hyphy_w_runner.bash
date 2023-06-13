@@ -21,11 +21,11 @@ do
 	#name inputs 
 	alignment=${base}/${clade}/popgenome/${clade}.pal2nal.fas
 	tree=${base}/${clade}/RAxML*.out
-	echo 'Running Hyphy on $clade'
+	echo "Running Hyphy on $clade"
 	
-	cat $clade >> $output_file
+	cat echo ${clade} >> $output_file
 	#actually run hyphy
 	(echo "5"; echo "1"; echo "1"; echo ${alignment}; echo "MG94CUSTOMCF3X4"; echo "2"; echo "012345"; echo ${tree}; echo "1") | hyphy -i | grep -A 8 RESULTS >> $output_file
 	
 	echo "finished $clade"
-done < ${base}/clades.txt 
+done < /global/scratch/users/chandlersutherland/e14/popgen/clades.txt 
