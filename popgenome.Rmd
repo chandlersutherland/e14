@@ -1,0 +1,190 @@
+---
+title: "PopGenome"
+output: html_notebook
+---
+
+```{r}
+library(PopGenome)
+library(readr)
+library(ggplot2)
+library(ggsignif)
+library(ggpubr)
+library(ggbeeswarm)
+library(RcppRoll)
+require(tidyverse)
+setwd("/global/scratch/users/chandlersutherland/e14/NLRCladeFinder/Atha_NLRome/")  
+getwd()
+```
+Final_Clades_CDS/Int7890_211_214_R_208_192_L_207/
+
+```{r}
+#download the updated Gene table
+clades <- read_delim("/global/scratch/users/chandlersutherland/e14/NLRCladeFinder/Atha_NLRome/Atha_NLRome_GeneTable.txt",delim = "\t")
+
+#get just the Col0 genes and add the common names 
+col0 <- clades %>% filter(Ecotype == 'ATHALIANA')
+gene_names <- read_delim("/global/scratch/users/chandlersutherland/e14/hvnlr_clades/hvNLR/Analysis/AthaKnownGenes.txt",
+                         delim='\t', col_names=c('Gene', 'name')) %>%
+              mutate(name= gsub("\t","",as.character(name))) %>%
+              separate(Gene, c(NA, 'Gene'), sep='_') %>%
+              mutate(Gene=str_sub(Gene, end = -3))
+col0_clean <- col0 %>% separate(Gene, c(NA, 'Gene', NA), sep='_') %>% merge(gene_names, on=Gene, all.x=TRUE)
+```
+
+```{r}
+#read in the folder containing the successful pal2nal alignments 
+GENOME.class <- readData(path='/global/scratch/users/chandlersutherland/e14/popgen/popgenome_test')
+#change the region names to be the same as the clade names used in the dataframe 
+GENOME.class@region.names <- str_remove(GENOME.class@region.names, '.pal2nal.fas')
+```
+
+
+```{r}
+#take a look at the summary statistics, specifically Col0 containing clades 
+sum_data <- as_tibble(get.sum.data(GENOME.class))
+colnames(sum_data)[[1]]<- "Clade"
+sum_data %>% mutate(Clade = GENOME.class@region.names) -> sum_data
+
+col_summary_stat <- sum_data %>% merge(col0_clean, by='Clade', all.y=TRUE) %>% subset(select=-c(Clade_0, Clade_1, Clade_2, Clade_3, Ecotype, Allele, File))
+
+```
+
+
+```{r}
+#Run Statistics on the GENOME.class object 
+GENOME.class <- F_ST.stats(GENOME.class) 
+GENOME.class <- neutrality.stats(GENOME.class) 
+GENOME.class <- diversity.stats(GENOME.class)
+```
+
+
+```{r}
+#add tajima's d to Col-0 summary table, plot 
+a <- GENOME.class@Tajima.D
+a <- tibble(Clade = rownames(a), TajimaD = a[,1])
+
+#import pn/ps data from hyphy analysis 
+dnds <- read.csv('/global/scratch/users/chandlersutherland/e14/popgen/hyphy_w.csv')
+
+#combine popgen data, add label, which has 'n'
+col_popgen <- a %>% merge(col_summary_stat, by='Clade', all.y=TRUE) %>% 
+  merge(dnds, by='Clade', all.x=TRUE)%>%
+  mutate(HV=recode(HV, `0` = "non-hv", `1`="hv"))%>% 
+  group_by(HV) %>% 
+  mutate(n = n()) %>% 
+  mutate(label = paste0(HV,"\n", "n=",n))
+
+labels <- col_popgen$label %>% unique()
+col_popgen$label <- factor(col_popgen$label, levels=c(labels[1], labels[2]))
+col_popgen %>% subset(select=-label)
+#write out 
+write_tsv(col_popgen %>% subset(select=-label), '/global/scratch/users/chandlersutherland/e14/popgen/col0_stats.tsv')
+col_popgen <- read_tsv('/global/scratch/users/chandlersutherland/e14/popgen/col0_stats.tsv')
+```
+
+```{r}
+p2 <- ggplot(col_popgen,
+       aes(x=label, y=TajimaD, fill=HV))+
+    geom_violin()+
+    geom_quasirandom(alpha=0.3)+
+  # ylim(-1.5,1.25)+
+   geom_signif(comparisons=list(c('non-hv\nn=98', 'hv\nn=36')), 
+               map_signif_level = TRUE, test=wilcox.test)+
+    scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  theme_classic()+
+  labs(x = '', y="Tajima's D")+
+    theme(legend.position='none', text=element_text(size=20))+
+  geom_hline(yintercept=0)+
+    theme(legend.position='none', text=element_text(size=20))+
+  #geom_label(aes(label=name), position=position_quasirandom()) 
+  
+p2 
+
+compare_means(TajimaD~HV, col_popgen, method='wilcox.test', paired=FALSE)
+```
+```{r}
+p3 <- ggplot(col_popgen,
+       aes(x=label, y=R, fill=HV))+
+    geom_violin()+
+    geom_quasirandom(alpha=0.3)+
+  # ylim(-1.5,1.25)+
+   geom_signif(comparisons=list(c(labels[1], labels[2])), 
+               map_signif_level = TRUE, test=wilcox.test)+
+    scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  theme_classic()+
+  labs(x = '', y="pn/ps")+
+    theme(legend.position='none', text=element_text(size=20))+
+  geom_hline(yintercept=1)+
+    theme(legend.position='none', text=element_text(size=20))+
+  # geom_label(aes(label=name), position=position_quasirandom())
+  
+p3 
+
+compare_means(R~HV, col_popgen, method='wilcox.test', paired=FALSE)
+```
+
+Try out Daniil's dn/ds calc 
+```{r}
+for (ii in seq_along(GENOME.class@region.data@biallelic.sites)){
+     name<-GENOME.class@region.names[[ii]]
+     Syn_table <- tibble(Position = GENOME.class@region.data@biallelic.sites[[ii]], Synon =
+                           GENOME.class@region.data@synonymous[[ii]])
+     Syn_table <- Syn_table %>% mutate(Syn = ifelse(Synon, 1,0))
+     Syn_table <- Syn_table %>% mutate(NonSyn = ifelse(Synon, 0,1))
+     
+     table <- tibble(Position = 1:max(Syn_table$Position)+100)
+     table <- left_join(table,Syn_table)
+     table <- table %>% mutate(Syn = ifelse(is.na(Syn),0,Syn)) 
+     table <- table %>% mutate(NonSyn = ifelse(is.na(NonSyn),0,NonSyn))
+     
+     Syn<-roll_mean(table$Syn,n=15,by=1,align = "center",fill = numeric(0), na.rm = T)
+     NonSyn<-roll_mean(table$NonSyn,n=15,by=1,align = "center",fill = numeric(0), na.rm = T)
+     All <-roll_mean(table$NonSyn+table$Syn,n=15,by=1,align = "center",fill = numeric(0), na.rm = T)
+     Roll<-tibble(Position = 1:length(Syn),Syn, NonSyn,All)
+     Long_Roll <- pivot_longer(Roll,cols = c("Syn","NonSyn","All"), names_to = "Type")
+     #esquisser(Long_Roll)
+     Long_Roll %>%
+       #filter(Position >= 800L & Position <= 1860L) %>%
+       filter(Type == "Syn")%>%
+       ggplot() +
+       aes(x = Position, y = value, color = Type) +
+       geom_line(size = 1L) +
+       scale_color_hue() + ylim(0,1)+ ggtitle(name)+
+       theme_minimal()
+     ggsave(filename = paste0("../Plots/Syn_",name,".pdf"))
+}
+```
+
+
+
+```{r}
+?roll_mean
+#calculate the mean across a rolling window of 15 
+Syn<-roll_mean(table$Syn,n=15,by=1,align = "center",fill = numeric(0), na.rm = T)
+NonSyn<-roll_mean(table$NonSyn,n=15,by=1,align = "center",fill = numeric(0), na.rm = T)
+
+#mean of syn and nonsyn changes 
+All <-roll_mean(table$NonSyn+table$Syn,n=15,by=1,align = "center",fill = numeric(0), na.rm = T)
+Roll<-tibble(Position = 1:length(Syn),Syn, NonSyn,All)
+Long_Roll <- pivot_longer(Roll,cols = c("Syn","NonSyn","All"), names_to = "Type")
+
+Long_Roll %>%
+ #filter(Position >= 800L & Position <= 1860L) %>%
+ filter(Type == "Syn")%>%
+ ggplot() +
+ aes(x = Position, y = value, color = Type) +
+ geom_line(size = 1L) +
+ scale_color_hue() + ylim(0,1)+ ggtitle(name)+
+ theme_minimal()
+
+Long_Roll %>%
+ #filter(Position >= 800L & Position <= 1860L) %>%
+ filter(Type == "NonSyn")%>%
+ ggplot() +
+ aes(x = Position, y = value, color = Type) +
+ geom_line(size = 1L) +
+ scale_color_hue() + ylim(0,1)+ ggtitle(name)+
+ theme_minimal()
+```
+
+
