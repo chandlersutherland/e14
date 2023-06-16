@@ -4,7 +4,7 @@
 #SBATCH --qos=minium_htc4_normal
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=24
-#SBATCH --time=01:00:00
+#SBATCH --time=03:00:00
 #SBATCH --mail-user=chandlersutherland@berkeley.edu
 #SBATCH --mail-type=ALL
 #SBATCH --error=/global/home/users/chandlersutherland/slurm_stderr/slurm-%j.out
@@ -15,7 +15,7 @@ source activate e14
 
 base=/global/scratch/users/chandlersutherland/e14/popgen/clades
 output_file=/global/scratch/users/chandlersutherland/e14/popgen/hyphy_w.csv
-echo "Clade,R,log_likelihood,GT,CT,CG,AT,AC" > $output_file
+#echo "Clade,R,log_likelihood,GT,CT,CG,AT,AC" > $output_file
 
 #for each clade, identify the codon alignment file and tree, then run hyphy to calculate dn/ds
 while read clade
@@ -41,4 +41,4 @@ do
 	#write to csv with clade info 
 	echo "${clade},${R},${log_likely},${GT},${CT},${CG},${AT},${AC}" >> $output_file
 	echo "finished $clade"
-done < /global/scratch/users/chandlersutherland/e14/popgen/clades.txt 
+done < /global/scratch/users/chandlersutherland/e14/popgen/clades2.txt 
