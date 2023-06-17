@@ -29,4 +29,4 @@ do
 	./pal2nal.pl $alignment $fasta -output fasta > $output
 	
 	echo "finished $clade"
-done < ${base}/clades.txt 
+done < /global/scratch/users/chandlersutherland/e14/popgen/clades.txt 
