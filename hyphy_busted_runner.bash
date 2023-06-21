@@ -16,9 +16,9 @@ source activate e14
 base=/global/scratch/users/chandlersutherland/e14/popgen/clades
 output_csv=/global/scratch/users/chandlersutherland/e14/popgen/hyphy_busted_p.csv
 
-echo "Clade,p" > $output_csv
+#echo "Clade,p" > $output_csv
 
-#for each clade, identify the codon alignment file and tree, then run hyphy to calculate dn/ds
+#for each clade, identify the codon alignment file and tree, then run hyphy busted
 while read clade
 do 
 	#name inputs 
@@ -28,14 +28,14 @@ do
 	log_file=${base}/${clade}/hyphy_busted.log
 	echo "Running Hyphy on $clade"
 	
-	#actually run hyphy
-	hyphy  busted --alignment ${alignment} --tree ${tree} | tee -a $log_file
+	#actually run hyphy in multithreading mode to hopefully speed up 
+	hyphy  busted CPU=24 --alignment ${alignment} --tree ${tree} | tee -a $log_file
 	
 	
-	#parse out desired info 
+	#parse out p value  
 	p=$(grep 'Likelihood ratio test' $log_file | grep -Eo '[+-]?[0-9]+([.][0-9]+)?') 
 	
 	#write to csv with clade info 
 	echo "${clade},${p}" >> $output_csv
 	echo "finished $clade"
-done < /global/scratch/users/chandlersutherland/e14/popgen/clades.txt 
+done < /global/scratch/users/chandlersutherland/e14/popgen/clades3.txt 
