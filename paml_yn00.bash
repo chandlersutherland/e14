@@ -24,8 +24,8 @@ while read clade
 do 
 	#actually run yn00
 	cd ${base}/${clade}
-	yn00 codeml.ctl 
-	
+	codeml codeml.ctl 
+	echo "finished codeml $clade"
 done < /global/scratch/users/chandlersutherland/e14/popgen/clades.txt
 
 #do separately bc there seems to be a lag 
