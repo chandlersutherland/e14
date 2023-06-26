@@ -30,7 +30,7 @@ done < /global/scratch/users/chandlersutherland/e14/popgen/clades.txt
 
 #do separately bc there seems to be a lag 
 while read clade
-	
+do	
 	#Get the number of synonymous and nonsynonymous sites, should be the same for both estimates  
 	S=$(cat 2ML.dS | grep -Eo '[+-]?[0-9]+\.[0-9]+' | wc -l)
 	N=$(cat 2ML.dN | grep -Eo '[+-]?[0-9]+\.[0-9]+' | wc -l)
