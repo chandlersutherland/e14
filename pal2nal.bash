@@ -21,12 +21,11 @@ do
 	#name inputs, initialize output directory 
 	alignment=${base}/${clade}/*.afa
 	fasta=${base}/${clade}/*.transcript.fa
-	output=${base}/${clade}/popgenome/${clade}.pal2nal.fas
-	mkdir -p ${base}/${clade}/popgenome
+	output=${base}/${clade}/${clade}.pal2nal.phy
 	
 	#actually run pal2nal 
 	cd $HOME/programs/pal2nal.v14/
-	./pal2nal.pl $alignment $fasta -output fasta > $output
+	./pal2nal.pl $alignment $fasta -output paml > $output
 	
 	echo "finished $clade"
 done < /global/scratch/users/chandlersutherland/e14/popgen/clades.txt 
