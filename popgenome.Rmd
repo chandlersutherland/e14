@@ -3,7 +3,9 @@ title: "PopGenome"
 output: html_notebook
 ---
 
+Collate population genetics data and use the hip popular PopGenome package!
 ```{r}
+#load necessary libraries
 library(PopGenome)
 library(readr)
 library(ggplot2)
@@ -11,23 +13,25 @@ library(ggsignif)
 library(ggpubr)
 library(ggbeeswarm)
 library(RcppRoll)
+library(stats)
+library(ggmosaic)
 require(tidyverse)
 setwd("/global/scratch/users/chandlersutherland/e14/NLRCladeFinder/Atha_NLRome/")  
 getwd()
 ```
-Final_Clades_CDS/Int7890_211_214_R_208_192_L_207/
 
 ```{r}
 #download the updated Gene table
 clades <- read_delim("/global/scratch/users/chandlersutherland/e14/NLRCladeFinder/Atha_NLRome/Atha_NLRome_GeneTable.txt",delim = "\t")
 
-#get just the Col0 genes and add the common names 
+#get just the Col0 genes and add the common names, write to col0_clean 
 col0 <- clades %>% filter(Ecotype == 'ATHALIANA')
 gene_names <- read_delim("/global/scratch/users/chandlersutherland/e14/hvnlr_clades/hvNLR/Analysis/AthaKnownGenes.txt",
                          delim='\t', col_names=c('Gene', 'name')) %>%
               mutate(name= gsub("\t","",as.character(name))) %>%
               separate(Gene, c(NA, 'Gene'), sep='_') %>%
               mutate(Gene=str_sub(Gene, end = -3))
+
 col0_clean <- col0 %>% separate(Gene, c(NA, 'Gene', NA), sep='_') %>% merge(gene_names, on=Gene, all.x=TRUE)
 ```
 
@@ -56,34 +60,53 @@ GENOME.class <- F_ST.stats(GENOME.class)
 GENOME.class <- neutrality.stats(GENOME.class) 
 GENOME.class <- diversity.stats(GENOME.class)
 ```
-
-
+The nucleotide diversity (average pairwise nucleotide differences) within and between the
+populations. Have to be divided by the slot GENOME.class@n.sites to obtain diversity per site (see also diversity.stats).
 ```{r}
-#add tajima's d to Col-0 summary table, plot 
-a <- GENOME.class@Tajima.D
-a <- tibble(Clade = rownames(a), TajimaD = a[,1])
+c <- GENOME.class@Pi
+c <- tibble(Clade = rownames(c), nuc.diversity = c[,1])
+c
 
-#import pn/ps data from hyphy analysis 
-dnds <- read.csv('/global/scratch/users/chandlersutherland/e14/popgen/hyphy_w.csv')
+GENOME.class@n.sites[,1]
 
-#combine popgen data, add label, which has 'n'
-col_popgen <- a %>% merge(col_summary_stat, by='Clade', all.y=TRUE) %>% 
-  merge(dnds, by='Clade', all.x=TRUE)%>%
-  mutate(HV=recode(HV, `0` = "non-hv", `1`="hv"))%>% 
-  group_by(HV) %>% 
-  mutate(n = n()) %>% 
-  mutate(label = paste0(HV,"\n", "n=",n))
-
-labels <- col_popgen$label %>% unique()
-col_popgen$label <- factor(col_popgen$label, levels=c(labels[1], labels[2]))
-col_popgen %>% subset(select=-label)
-#write out 
-write_tsv(col_popgen %>% subset(select=-label), '/global/scratch/users/chandlersutherland/e14/popgen/col0_stats.tsv')
-col_popgen <- read_tsv('/global/scratch/users/chandlersutherland/e14/popgen/col0_stats.tsv')
 ```
 
 ```{r}
-p2 <- ggplot(col_popgen,
+#add tajima's d and pi to Col-0 summary table, plot 
+a <- GENOME.class@Tajima.D
+a <- tibble(Clade = rownames(a), TajimaD = a[,1])
+
+b <- GENOME.class@nuc.diversity.within
+b <- tibble(Clade = rownames(b), nuc.diversity = b[,1])
+
+#import pn/ps data and busted from hyphy analysis 
+dnds <- read.csv('/global/scratch/users/chandlersutherland/e14/popgen/hyphy_w.csv')
+busted_p <- read_csv('/global/scratch/users/chandlersutherland/e14/popgen/hyphy_busted_p.csv')
+
+#combine popgen data into a single df 
+col_popgen <- a %>% merge(col_summary_stat, by='Clade', all.y=TRUE) %>% 
+  merge(b, by='Clade', all.x=TRUE)%>%
+  merge(dnds, by='Clade', all.x=TRUE)%>%
+  merge(busted_p, all.x=TRUE)%>%
+  mutate(busted_q = p.adjust(p, method='BH')) %>% #correct BUSTED p value for multiple testing 
+  mutate(busted=case_when(busted_q < 0.05 ~ 'yes', busted_q >= 0.05 ~ 'no')) %>% #create categorical and remove old p value
+  subset(select=-p) %>%
+  mutate(HV=recode(HV, `0` = "non-hv", `1`="hv")) %>%
+  relocate("Gene", "Clade", "name", "HV")
+
+write_tsv(col_popgen, '/global/scratch/users/chandlersutherland/e14/popgen/col0_popgen_stats.tsv')
+
+#add the label column, which has sample size and is unfriendly to tsv format 
+to_plot <- col_popgen %>% group_by(HV) %>%
+  mutate(n=n()) %>%
+  mutate(label = paste0(HV,"\n", "n=",n))
+
+labels <- to_plot$label %>% unique()
+to_plot$label <- factor(to_plot$label, levels=c(labels[1], labels[2]))
+```
+
+```{r}
+p2 <- ggplot(to_plot,
        aes(x=label, y=TajimaD, fill=HV))+
     geom_violin()+
     geom_quasirandom(alpha=0.3)+
@@ -95,13 +118,87 @@ p2 <- ggplot(col_popgen,
   labs(x = '', y="Tajima's D")+
     theme(legend.position='none', text=element_text(size=20))+
   geom_hline(yintercept=0)+
-    theme(legend.position='none', text=element_text(size=20))+
+    theme(legend.position='none', text=element_text(size=20)) #+
   #geom_label(aes(label=name), position=position_quasirandom()) 
   
 p2 
 
-compare_means(TajimaD~HV, col_popgen, method='wilcox.test', paired=FALSE)
+compare_means(TajimaD~HV, to_plot, method='wilcox.test', paired=FALSE)
 ```
+```{r}
+p3 <- ggplot(to_plot,
+       aes(x=label, y=R, fill=HV))+
+    geom_violin()+
+    geom_quasirandom(alpha=0.3)+
+  # ylim(-1.5,1.25)+
+   geom_signif(comparisons=list(c(labels[1], labels[2])), 
+               map_signif_level = TRUE, test=wilcox.test)+
+    scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  theme_classic()+
+  labs(x = '', y="pn/ps")+
+    theme(legend.position='none', text=element_text(size=20))+
+  geom_hline(yintercept=1)+
+    theme(legend.position='none', text=element_text(size=20))
+  # geom_label(aes(label=name), position=position_quasirandom())
+  
+p3 
+
+compare_means(R~HV, to_plot, method='wilcox.test', paired=FALSE)
+```
+```{r}
+p4 <- ggplot(to_plot,
+       aes(x=label, y=nuc.diversity, fill=HV))+
+    geom_violin()+
+    geom_quasirandom(alpha=0.3)+
+  # ylim(-1.5,1.25)+
+   geom_signif(comparisons=list(c(labels[1], labels[2])), 
+               map_signif_level = TRUE, test=wilcox.test)+
+    scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  theme_classic()+
+  labs(x = '', y="Nucleotide Diversity")+
+    theme(legend.position='none', text=element_text(size=20))+
+    theme(legend.position='none', text=element_text(size=20))
+  # geom_label(aes(label=name), position=position_quasirandom())
+  
+p4 
+
+compare_means(nuc.diversity~HV, to_plot, method='wilcox.test', paired=FALSE)
+```
+
+For busted p, first step is a FDR correction, then plot as a mosaic
+```{r}
+#display a contigency table 
+table <- table(col_popgen$HV, col_popgen$busted)
+cont_table <- data.frame(no=c(0,7,7),yes=c(35,90,35+90),total=c(35, 97, 35+97+7+125), row.names=c("hv","non-hv", "total"))
+cont_table2 <- data.frame(no=c(0,7),yes=c(35,90), row.names=c("hv","non-hv"))
+```
+
+```{r}
+col_popgen$HV <- factor(col_popgen$HV, levels=c('non-hv', 'hv'))
+col_popgen$busted <- factor(col_popgen$busted, levels=c('no', 'yes'))
+
+col_popgen %>%
+    ggplot() +
+    geom_mosaic(aes(x=product(HV), fill=busted)) +
+    #scale_y_continuous(breaks = seq(0, 1, by = 0.2)) +
+    ylab("significant with BUSTED (FDR < 0.05)") +
+    xlab("HV status") +
+  geom_mosaic_text(aes(x = product(HV), fill = busted, label = after_stat(.wt)))+
+  theme_mosaic()+
+    theme(axis.ticks.x = element_blank(), axis.ticks.y=element_blank())+
+    #theme_mosaic()+
+  theme(legend.position='none')+
+    scale_fill_manual(values = c("#4575B4", "#ABD9E9"))
+
+```
+
+```{r}
+fisher.test(table)
+```
+
+
+
+
 ```{r}
 p3 <- ggplot(col_popgen,
        aes(x=label, y=R, fill=HV))+
