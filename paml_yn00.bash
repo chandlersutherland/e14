@@ -15,7 +15,7 @@ module load paml
 source activate e14 
 
 base=/global/scratch/users/chandlersutherland/e14/popgen/clades
-output_csv=/global/scratch/users/chandlersutherland/e14/popgen/paml_yn00.csv
+output_csv=/global/scratch/users/chandlersutherland/e14/popgen/paml.csv
 
 echo "Clade,S,N,dS_NG,dN_NG,dS_ML,dN_ML" > $output_csv
 
@@ -30,19 +30,21 @@ done < /global/scratch/users/chandlersutherland/e14/popgen/clades.txt
 
 #do separately bc there seems to be a lag 
 while read clade
-do	
-	#Get the number of synonymous and nonsynonymous sites, should be the same for both estimates  
-	S=$(cat 2ML.dS | grep -Eo '[+-]?[0-9]+\.[0-9]+' | wc -l)
-	N=$(cat 2ML.dN | grep -Eo '[+-]?[0-9]+\.[0-9]+' | wc -l)
-	
-	#get the average NG dS and dN 
-	dS_NG=$(cat 2NG.dS | grep -Eo '[+-]?[0-9]+\.[0-9]+' | awk '{a+=$1} END{print a/NR}')
-	dN_NG=$(cat 2NG.dN | grep -Eo '[+-]?[0-9]+\.[0-9]+' | awk '{a+=$1} END{print a/NR}')
-	
-	#get the average ML dS and dN 
-	dS_ML=$(cat 2ML.dS | grep -Eo '[+-]?[0-9]+\.[0-9]+' | awk '{a+=$1} END{print a/NR}')
-	dN_ML=$(cat 2ML.dN | grep -Eo '[+-]?[0-9]+\.[0-9]+' | awk '{a+=$1} END{print a/NR}')
-	#write to csv with clade info 
-	echo "${clade},${S},${N},${dS_NG},${dN_NG},${dS_ML},${dN_ML}" >> $output_csv
-	echo "finished $clade"
+do
+    #Get the number of synonymous and nonsynonymous sites, should be the same for both estimates
+    cd ${base}/${clade}
+    S=$(cat 2ML.dS | grep -Eo '[+-]?[0-9]+\.[0-9]+' | wc -l)
+    N=$(cat 2ML.dN | grep -Eo '[+-]?[0-9]+\.[0-9]+' | wc -l)
+    
+    #get the average NG dS and dN
+    dS_NG=$(cat 2NG.dS | grep -Eo '[+-]?[0-9]+\.[0-9]+' | awk '{a+=$1} END{print a/NR}')
+    dN_NG=$(cat 2NG.dN | grep -Eo '[+-]?[0-9]+\.[0-9]+' | awk '{a+=$1} END{print a/NR}')
+
+    #get the average ML dS and dN
+    dS_ML=$(cat 2ML.dS | grep -Eo '[+-]?[0-9]+\.[0-9]+' | awk '{a+=$1} END{print a/NR}')
+    dN_ML=$(cat 2ML.dN | grep -Eo '[+-]?[0-9]+\.[0-9]+' | awk '{a+=$1} END{print a/NR}')
+
+    #write to csv with clade info
+    echo "${clade},${S},${N},${dS_NG},${dN_NG},${dS_ML},${dN_ML}" >> $output_csv
+    echo "finished $clade"
 done < /global/scratch/users/chandlersutherland/e14/popgen/clades.txt 
