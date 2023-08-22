@@ -15,8 +15,9 @@ library(ggbeeswarm)
 library(RcppRoll)
 library(stats)
 library(ggmosaic)
+library(pegas)
 require(tidyverse)
-setwd("/global/scratch/users/chandlersutherland/e14/NLRCladeFinder/Atha_NLRome/")  
+setwd("/global/scratch/users/chandlersutherland/e14/popgen/msdir")  
 getwd()
 ```
 
@@ -56,19 +57,31 @@ col_summary_stat <- sum_data %>% merge(col0_clean, by='Clade', all.y=TRUE) %>% s
 
 ```{r}
 #Run Statistics on the GENOME.class object 
-GENOME.class <- F_ST.stats(GENOME.class) 
+GENOME.class <- F_ST.stats(GENOME.class)
+GENOME.class <- F_ST.stats.2(GENOME.class)
 GENOME.class <- neutrality.stats(GENOME.class) 
-GENOME.class <- diversity.stats(GENOME.class)
+GENOME.class <- diversity.stats(GENOME.class, pi=TRUE)
+GENOME.class <- detail.stats(GENOME.class, biallelic.structure = TRUE)
 ```
+
 The nucleotide diversity (average pairwise nucleotide differences) within and between the
 populations. Have to be divided by the slot GENOME.class@n.sites to obtain diversity per site (see also diversity.stats).
 ```{r}
+GENOME.class@haplotype.F_ST 
+get.F_ST(GENOME.class)
 c <- GENOME.class@Pi
 c <- tibble(Clade = rownames(c), nuc.diversity = c[,1])
 c
 
 GENOME.class@n.sites[,1]
+get.diversity(GENOME.class)[,1]
+GENOME.class@nuc.diversity.within[,1]/GENOME.class@n.valid.sites
+get.detail(GENOME.class)[,1]
 
+GENOME.class@region.stats@nucleotide.diversity
+get.diversity(GENOME.class)
+
+GENOME.class@region.stats@nucleotide.diversity
 ```
 
 ```{r}
@@ -79,22 +92,35 @@ a <- tibble(Clade = rownames(a), TajimaD = a[,1])
 b <- GENOME.class@nuc.diversity.within
 b <- tibble(Clade = rownames(b), nuc.diversity = b[,1])
 
-#import pn/ps data and busted from hyphy analysis 
+c <- GENOME.class@nuc.diversity.within[,1]/GENOME.class@n.valid.sites
+c <- tibble(Clade=names(c), nuc.diversity.persite = c)
+
+d <- GENOME.class@Pi[,1]/GENOME.class@n.valid.sites
+d <- tibble(Clade=names(d), PopPi = d)
+
+#import pn/ps data and busted from hyphy analysis and paml dS dN estimates 
 dnds <- read.csv('/global/scratch/users/chandlersutherland/e14/popgen/hyphy_w.csv')
 busted_p <- read_csv('/global/scratch/users/chandlersutherland/e14/popgen/hyphy_busted_p.csv')
+paml <- read_csv('/global/scratch/users/chandlersutherland/e14/popgen/paml.csv')%>%
+  subset(select=c('Clade', 'dS_ML', 'dN_ML'))
+egglib <- read_tsv('/global/scratch/users/chandlersutherland/e14/popgen/egglib_pi.tsv') %>% rename(Clade=clade)
 
 #combine popgen data into a single df 
 col_popgen <- a %>% merge(col_summary_stat, by='Clade', all.y=TRUE) %>% 
   merge(b, by='Clade', all.x=TRUE)%>%
+  merge(c, by='Clade', all.x=TRUE)%>%
+  merge(d, by='Clade', all.x=TRUE)%>%
   merge(dnds, by='Clade', all.x=TRUE)%>%
   merge(busted_p, all.x=TRUE)%>%
+  merge(paml, all.x=TRUE)%>%
+  merge(egglib, all.x=TRUE)%>% 
   mutate(busted_q = p.adjust(p, method='BH')) %>% #correct BUSTED p value for multiple testing 
   mutate(busted=case_when(busted_q < 0.05 ~ 'yes', busted_q >= 0.05 ~ 'no')) %>% #create categorical and remove old p value
   subset(select=-p) %>%
   mutate(HV=recode(HV, `0` = "non-hv", `1`="hv")) %>%
   relocate("Gene", "Clade", "name", "HV")
 
-write_tsv(col_popgen, '/global/scratch/users/chandlersutherland/e14/popgen/col0_popgen_stats.tsv')
+#write_tsv(col_popgen, '/global/scratch/users/chandlersutherland/e14/popgen/col0_popgen_stats.tsv')
 
 #add the label column, which has sample size and is unfriendly to tsv format 
 to_plot <- col_popgen %>% group_by(HV) %>%
@@ -104,6 +130,128 @@ to_plot <- col_popgen %>% group_by(HV) %>%
 labels <- to_plot$label %>% unique()
 to_plot$label <- factor(to_plot$label, levels=c(labels[1], labels[2]))
 ```
+
+```{r}
+#check Pi correlation 
+col_popgen
+
+corr<-cor(col_popgen$PopPi, col_popgen$Pi)
+label<-paste('r=', corr)
+ggplot(col_popgen, aes(x=PopPi, y=Pi, fill=HV))+
+    geom_point(aes(color=HV))+
+  geom_abline(slope=1, intercept=0, color='darkgrey', linetype='dashed')+
+#  ylim(0, 0.15)+
+#  xlim(0,0.15)+
+  scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  xlab('PopGenome Pi')+
+  ylab('Egglib Pi')+
+  theme_classic()+
+  annotate(geom="text", label=label, x=0.08, y=0.06, vjust=-1, color='darkgrey')
+
+#check PiS 
+corr<-cor(col_popgen$dS_ML, col_popgen$PiS)
+label<-paste('r=', corr)
+ggplot(col_popgen, aes(x=dS_ML, y=PiS, fill=HV))+
+    geom_point(aes(color=HV))+
+  geom_abline(slope=1, intercept=0, color='darkgrey', linetype='dashed')+
+  ylim(0, 0.15)+
+  xlim(0,0.15)+
+  scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  xlab('PamL PiS')+
+  ylab('Egglib PiS')+
+  theme_classic()+
+  annotate(geom="text", label=label, x=0.05, y=0.1, vjust=-1, color='darkgrey')
+
+#check PiN 
+corr<-cor(col_popgen$dN_ML, col_popgen$PiN)
+label<-paste('r=', corr)
+ggplot(col_popgen, aes(x=dN_ML, y=PiN, fill=HV))+
+    geom_point(aes(color=HV))+
+  geom_abline(slope=1, intercept=0, color='darkgrey', linetype='dashed')+
+  ylim(0, 0.10)+
+  xlim(0, 0.10)+
+  scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  xlab('PamL PiNS')+
+  ylab('Egglib PiNS')+
+  theme_classic()+
+  annotate(geom="text", label=label, x=0.075, y=0.08, vjust=-1, color='darkgrey')
+
+#check D
+corr<-cor(col_popgen$TajimaD, col_popgen$D)
+label<-paste('r=', corr)
+ggplot(col_popgen, aes(x=TajimaD, y=D, fill=HV))+
+    geom_point(aes(color=HV))+
+  geom_abline(slope=1, intercept=0, color='darkgrey', linetype='dashed')+
+ # ylim(0, 0.10)+
+#  xlim(0, 0.10)+
+  scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  xlab('PopGenome D')+
+  ylab('Egglib D')+
+  theme_classic()+
+  annotate(geom="text", label=label, x=0.075, y=-1, vjust=-1, color='darkgrey')
+```
+```{r}
+to_plot[order(to_plot$Pi, decreasing = TRUE), ] 
+```
+
+```{r}
+ggplot(to_plot,
+       aes(x=label, y=D, fill=HV))+
+    geom_violin()+
+    geom_quasirandom(alpha=0.3)+
+  # ylim(-1.5,1.25)+
+   geom_signif(comparisons=list(c('non-hv\nn=98', 'hv\nn=36')), 
+               map_signif_level = TRUE, test=wilcox.test)+
+    scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  theme_classic()+
+  labs(x = '', y="Tajima's D")+
+    theme(legend.position='none', text=element_text(size=20))+
+  geom_hline(yintercept=0)+
+    theme(legend.position='none', text=element_text(size=20))
+
+ggplot(to_plot,
+       aes(x=label, y=Pi, fill=HV))+
+    geom_violin()+
+    geom_quasirandom(alpha=0.3)+
+  # ylim(-1.5,1.25)+
+   geom_signif(comparisons=list(c('non-hv\nn=98', 'hv\nn=36')), 
+               map_signif_level = TRUE, test=wilcox.test)+
+    scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  theme_classic()+
+  labs(x = '', y="Pi")+
+    theme(legend.position='none', text=element_text(size=20))+
+  geom_hline(yintercept=0)+
+    theme(legend.position='none', text=element_text(size=20))
+
+ggplot(to_plot,
+       aes(x=label, y=PiS, fill=HV))+
+    geom_violin()+
+    geom_quasirandom(alpha=0.3)+
+  # ylim(-1.5,1.25)+
+   geom_signif(comparisons=list(c('non-hv\nn=98', 'hv\nn=36')), 
+               map_signif_level = TRUE, test=wilcox.test)+
+    scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  theme_classic()+
+  labs(x = '', y="PiS")+
+    theme(legend.position='none', text=element_text(size=20))+
+  geom_hline(yintercept=0)+
+    theme(legend.position='none', text=element_text(size=20))
+
+ggplot(to_plot,
+       aes(x=label, y=PiN, fill=HV))+
+    geom_violin()+
+    geom_quasirandom(alpha=0.3)+
+  # ylim(-1.5,1.25)+
+   geom_signif(comparisons=list(c('non-hv\nn=98', 'hv\nn=36')), 
+               map_signif_level = TRUE, test=wilcox.test)+
+    scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  theme_classic()+
+  labs(x = '', y="PiN")+
+    theme(legend.position='none', text=element_text(size=20))+
+  geom_hline(yintercept=0)+
+    theme(legend.position='none', text=element_text(size=20))
+```
+
 
 ```{r}
 p2 <- ggplot(to_plot,
@@ -164,6 +312,25 @@ p4
 
 compare_means(nuc.diversity~HV, to_plot, method='wilcox.test', paired=FALSE)
 ```
+```{r}
+p5 <- ggplot(to_plot,
+       aes(x=label, y=nuc.diversity.persite, fill=HV))+
+    geom_violin()+
+    geom_quasirandom(alpha=0.3)+
+  # ylim(-1.5,1.25)+
+   geom_signif(comparisons=list(c('non-hv\nn=98', 'hv\nn=36')), 
+               map_signif_level = TRUE, test=wilcox.test)+
+    scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  theme_classic()+
+  labs(x = '', y="nuc diversity per site")+
+    theme(legend.position='none', text=element_text(size=20))+
+    theme(legend.position='none', text=element_text(size=20)) +
+  geom_label(aes(label=name), position=position_quasirandom()) 
+  
+p5 
+
+compare_means(nuc.diversity.persite~HV, to_plot, method='wilcox.test', paired=FALSE)
+```
 
 For busted p, first step is a FDR correction, then plot as a mosaic
 ```{r}
@@ -200,7 +367,7 @@ fisher.test(table)
 
 
 ```{r}
-p3 <- ggplot(col_popgen,
+p3 <- ggplot(to_plot,
        aes(x=label, y=R, fill=HV))+
     geom_violin()+
     geom_quasirandom(alpha=0.3)+
@@ -212,7 +379,7 @@ p3 <- ggplot(col_popgen,
   labs(x = '', y="pn/ps")+
     theme(legend.position='none', text=element_text(size=20))+
   geom_hline(yintercept=1)+
-    theme(legend.position='none', text=element_text(size=20))+
+    theme(legend.position='none', text=element_text(size=20)) #+
   # geom_label(aes(label=name), position=position_quasirandom())
   
 p3 
@@ -283,5 +450,156 @@ Long_Roll %>%
  scale_color_hue() + ylim(0,1)+ ggtitle(name)+
  theme_minimal()
 ```
+```{r}
+name<-'Int7765_208_274_R_142'
+d <- GENOME.class@region.names==name
+d %>% which()
+GENOME.class@region.names[[177]]
+GENOME.class@nuc.diversity.within[[177]]
+GENOME.class@n.valid.sites[[177]]
+GENOME.class@n.sites[[177]]
+```
 
+```{r}
+name<-'Int14387_212_343_R_44'
+d <- GENOME.class@region.names=='Int14387_212_343_R_44'
+d %>% which()
+GENOME.class@region.names[[165]]
+
+Syn_table <- tibble(Position = GENOME.class@region.data@biallelic.sites[[165]], Synon =
+                           GENOME.class@region.data@synonymous[[165]])
+Syn_table <- Syn_table %>% mutate(Syn = ifelse(Synon, 1,0))
+Syn_table <- Syn_table %>% mutate(NonSyn = ifelse(Synon, 0,1))
+     
+table <- tibble(Position = 1:max(Syn_table$Position)+100)
+table <- left_join(table,Syn_table)
+table <- table %>% mutate(Syn = ifelse(is.na(Syn),0,Syn)) 
+table <- table %>% mutate(NonSyn = ifelse(is.na(NonSyn),0,NonSyn))
+
+rpp13_matrix <- get.biallelic.matrix(GENOME.class, 165)
+```
+
+#popgenome under the hood
+```{r}
+calc_nuc_diversity_within <- function(matrix){
+  
+  n.individuals   <- dim(matrix)[1]
+
+  if(n.individuals==1){return(0)}
+
+  #n.vergleiche    <- choose(dim(matrix)[1],2)
+  
+  site.div <- apply(matrix,2,function(x){
+             
+         einsen       <- sum(x==1, na.rm=TRUE)
+         nullen       <- sum(x==0, na.rm=TRUE)
+	 all          <- einsen + nullen
+         n.vergleiche <- (all*(all-1))/2  
+         if(n.vergleiche==0){return(0)}                                   
+         div          <- (einsen * nullen)/n.vergleiche 
+         return(div)
+         })
+
+  div <- sum(site.div)
+
+return(list(div=div, site.div=site.div))
+}
+
+calc_nuc_diversity_within(rpp13_matrix)[[1]]/GENOME.class@n.valid.sites[[165]]
+
+syn_pos <- Syn_table %>% filter(Syn==TRUE) %>% pull(Position) %>% as.character() %>% c()
+syn_sites <- length(syn_pos)
+colnames(rpp13_matrix)
+
+rpp13_matrix[,syn_pos,drop = FALSE]
+calc_nuc_diversity_within(rpp13_matrix[,syn_pos,drop = FALSE])[[1]]/syn_sites
+#this is synonymous sites with snps, not all synonymous sites.
+
+GENOME.class@region.data@synonymous[[165]]
+GENOME.class.split <- diversity.stats(GENOME.class, subsites="syn", pi=TRUE)
+GENOME.class.split@Pi[[165]]/270
+GENOME.class.split@n.sites[[165]]
+get.sum.data(GENOME.class.split, subsites='syn')
+get.codons(GENOME.class,165)
+GENOME.class.nsn <- diversity.stats(GENOME.class, subsites="nonsyn", pi=TRUE)
+GENOME.class.split@Pi[[165]]/947
+```
+```{r}
+to_plot %>% ungroup() %>% mutate(clean_name = case_when(name == 'RPP13' ~ 'RPP13', 
+                                                        name == 'RPP7' ~ 'RPP7', 
+                                                        name == 'RPP1' ~ 'RPP1', 
+                                                        name == 'RPP8' ~ 'RPP8')) %>%
+  ggplot(aes(x=PiS, y=PiN, fill=HV))+
+    geom_point(aes(color=HV))+
+  geom_abline(slope=1, intercept=0, color='darkgrey', linetype='dashed')+
+  ylim(0, 0.08)+
+  xlim(0,0.08)+
+  scale_fill_manual(values=c('#F8766D', '#00BFC4'))+
+  geom_text(aes(label=clean_name))+
+  xlab('PiS')+
+  ylab('PiN')+
+  theme_classic()+
+  annotate(geom="text", label='piS=piN', x=0.05, y=0.07, vjust=-1, color='darkgrey')
+
+
+```
+
+```{r}
+fasta_dir='/global/scratch/users/chandlersutherland/e14/popgen/popgenome_test'
+fasta_files=list.files(fasta_dir, full.names = TRUE)
+tajd_stat <- data.frame()
+
+for(file in fasta_files){
+  a <- read.FASTA(file)
+  d <- tajima.test(a)[[1]]
+  p <- tajima.test(a)[[2]]
+  p_b <- tajima.test(a)[[3]]
+  clade <- file %>% str_split('/') %>% last() %>% last() %>% str_replace('.pal2nal.fas', '')
+  tajd_stat <- rbind(tajd_stat, c(clade, d, p, p_b))
+}
+
+colnames(tajd_stat) <- c('Clade', 'D', 'p', 'p_beta')
+
+tajima.test <- function(x)
+{
+    n <- if (is.list(x)) length(x) else dim(x)[1]
+    if (n < 4) {
+        warning("Tajima test requires at least 4 sequences")
+        return(list(D = NaN, Pval.normal = NaN, Pval.beta = NaN))
+    }
+    khat <- mean(dist.dna(x, "N", pairwise.deletion = TRUE))
+    S <- length(seg.sites(x))
+    if (!S) {
+        warning("no segregating sites")
+        return(list(D = NaN, Pval.normal = NaN, Pval.beta = NaN))
+    }
+    tmp <- 1:(n - 1)
+    a1 <- sum(1/tmp)
+    a2 <- sum(1/tmp^2)
+    b1 <- (n + 1)/(3 * (n - 1))
+    b2 <- 2 * (n^2 + n + 3)/(9 * n * (n - 1))
+    c1 <- b1 - 1/a1
+    c2 <- b2 - (n + 2)/(a1 * n) + a2/a1^2
+    e1 <- c1/a1
+    e2 <- c2/(a1^2 + a2)
+    D <- (khat - S/a1)/sqrt(e1 * S + e2 * S * (S - 1))
+    Dmin <- (2/n - 1/a1)/sqrt(e2)
+    Dmax <- ((n + 1)/(2 * n) - 1/a1)/sqrt(e2)
+    tmp1 <- 1 + Dmin * Dmax
+    tmp2 <- Dmax - Dmin
+    a <- -tmp1 * Dmax/tmp2
+    b <- tmp1 * Dmin/tmp2
+    p <- pbeta((D - Dmin)/tmp2, b, a)
+    p <- if (p < 0.5) 2 * p else 2 * (1 - p)
+    list(D = D, Pval.normal = 2 * pnorm(-abs(D)), Pval.beta = p)
+}
+```
+```{r}
+setwd("/global/scratch/users/chandlersutherland/e14/popgen/msdir")  
+MS.class <- MS(GENOME.class,thetaID="Tajima",neutrality=TRUE)
+MS.class@locus[[2]]@n.sam
+MS.class@prob.equal[[1]]
+MS.class@obs.val[[1]]
+readMS('/global/scratch/users/chandlersutherland/e14/popgen/msdir/ms.out')@Tajima
+```
 
