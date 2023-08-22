@@ -17,7 +17,15 @@ cd /global/scratch/users/chandlersutherland/e14/popgen/vcf_1001
 bed='/global/scratch/users/chandlersutherland/Athaliana/Atha_cds.bed'
 #vcftools --vcf nlrome_partial.recode.vcf --chr 1 --recode --bed $bed nlrome_partial_1_cds 
 
-vcftools --vcf nlrome_partial.recode.vcf --chr 2 --recode --bed $bed nlrome_partial_2_cds
-vcftools --vcf nlrome_partial.recode.vcf --chr 3 --recode --bed $bed nlrome_partial_3_cds
-vcftools --vcf nlrome_partial.recode.vcf --chr 4 --recode --bed $bed nlrome_partial_4_cds
-vcftools --vcf nlrome_partial.recode.vcf --chr 5 --recode --bed $bed nlrome_partial_5_cds
+#vcftools --vcf nlrome_partial.recode.vcf --chr 2 --recode --bed $bed --out nlrome_partial_2_cds
+#vcftools --vcf nlrome_partial.recode.vcf --chr 3 --recode --bed $bed --out nlrome_partial_3_cds
+#vcftools --vcf nlrome_partial.recode.vcf --chr 4 --recode --bed $bed --out nlrome_partial_4_cds
+#vcftools --vcf nlrome_partial.recode.vcf --chr 5 --recode --bed $bed --out nlrome_partial_5_cds
+
+#repeat with gene bed file
+bed_gene='/global/scratch/users/chandlersutherland/Athaliana/Atha_genes.recode.bed'
+vcftools --vcf nlrome_partial.recode.vcf --chr 1 --recode --bed $bed_gene --out nlrome_partial_1_gene
+vcftools --vcf nlrome_partial.recode.vcf --chr 2 --recode --bed $bed_gene --out nlrome_partial_2_gene
+vcftools --vcf nlrome_partial.recode.vcf --chr 3 --recode --bed $bed_gene --out nlrome_partial_3_gene
+vcftools --vcf nlrome_partial.recode.vcf --chr 4 --recode --bed $bed_gene --out nlrome_partial_4_gene
+vcftools --vcf nlrome_partial.recode.vcf --chr 5 --recode --bed $bed_gene --out nlrome_partial_5_gene
