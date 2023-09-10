@@ -4,7 +4,7 @@
 #SBATCH --qos=minium_htc4_normal
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=24
-#SBATCH --time=72:00:00
+#SBATCH --time=12:00:00
 #SBATCH --mail-user=chandlersutherland@berkeley.edu
 #SBATCH --mail-type=ALL
 #SBATCH --error=/global/home/users/chandlersutherland/slurm_stderr/slurm-%j.out
@@ -15,19 +15,27 @@ module load paml
 source activate e14 
 
 base=/global/scratch/users/chandlersutherland/e14/popgen/clades
-#output_csv=/global/scratch/users/chandlersutherland/e14/popgen/paml_pos.csv
+clade=$(cat /global/scratch/users/chandlersutherland/e14/popgen/clades.txt)
 
-#echo "Clade,S,N,dS_NG,dN_NG,dS_ML,dN_ML" > $output_csv
-
-#for each clade, identify the codon alignment file and tree, then run hyphy to calculate dn/ds
-while read clade
-do 
-	#actually run codeml
-	cd ${base}/${clade}
+#make parallel, taking forever 
+PAML_RUN(){
+	cd ${base}/${1}
 	codeml codeml_m0.ctl 
-	echo "finished codeml $clade"
-done < /global/scratch/users/chandlersutherland/e14/popgen/clades.txt
+	echo "finished codeml $1"
+}
 
+export base=$base
+export -f PAML_RUN 
+
+parallel PAML_RUN ::: $clade 
+
+#while read clade
+#do 
+	#actually run codeml
+#	cd ${base}/${clade}
+#	codeml codeml_m0.ctl 
+#	echo "finished codeml $clade"
+#done < /global/scratch/users/chandlersutherland/e14/popgen/clades.txt
 #do separately bc there seems to be a lag 
 #while read clade
 #do
