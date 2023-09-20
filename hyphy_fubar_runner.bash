@@ -20,22 +20,22 @@ clade=$(cat /global/scratch/users/chandlersutherland/e14/popgen/clades.txt)
 echo "Clade,n_codons,n_pos_sites" > $output_csv
 
 FUBAR_RUN(){
-	alignment=${base}/${clade}/popgenome/${clade}.pal2nal.fas
-	tree=${base}/${clade}/RAxML*.out
+	alignment=${base}/${1}/popgenome/${1}.pal2nal.fas
+	tree=${base}/${1}/RAxML*.out
 	
-	log_file=${base}/${clade}/hyphy_fubar.log
+	log_file=${base}/${1}/hyphy_fubar.log
 	echo "Running Hyphy on $clade"
 	
 	#actually run hyphy in multithreading mode to hopefully speed up 
-	hyphy  fubar CPU=24 --alignment ${alignment} --tree ${tree} | tee -a $log_file
+	hyphy  fubar CPU=4 --alignment ${alignment} --tree ${tree} | tee -a $log_file
 	
 	#parse out relevant values  
-	n_sites=$(grep 'FUBAR inferred' hyphy_fubar.log | sed 's@^[^0-9]*\([0-9]\+\).*@\1@') 
-	n_codons=$(grep 'Loaded a multiple sequence alignment' hyphy_fubar.log | sed -r 's/([^0-9]*([0-9]*)){2}.*/\2/')
+	n_sites=$(grep 'FUBAR inferred' $log_file | sed 's@^[^0-9]*\([0-9]\+\).*@\1@') 
+	n_codons=$(grep 'Loaded a multiple sequence alignment' $log_file | sed -r 's/([^0-9]*([0-9]*)){2}.*/\2/')
 	
 	#write to csv with clade info 
-	echo "${clade},${n_codons},${n_sites}" >> $output_csv
-	echo "finished $clade"
+	echo "${1},${n_codons},${n_sites}" >> $output_csv
+	echo "finished $1"
 }
 
 export base=$base
