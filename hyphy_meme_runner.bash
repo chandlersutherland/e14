@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=hyphy_fubar
+#SBATCH --job-name=hyphy_meme
 #SBATCH --partition=savio4_htc
 #SBATCH --qos=minium_htc4_normal
 #SBATCH --nodes=1
@@ -31,7 +31,7 @@ MEME_RUN(){
 }
 
 export base=$base
-export -f FUBAR_RUN
+export -f MEME_RUN
 
 parallel MEME_RUN ::: $clade 
 
