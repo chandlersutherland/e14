@@ -20,8 +20,11 @@ clade=$(cat ${clade_file}) #have to export clade file to paml to get it to run
 #make parallel, taking forever 
 PAML_RUN(){
 	cd ${base}/${1}
+	echo "starting ${1}"
+	date 
 	codeml codeml_m0.ctl 
 	echo "finished codeml $1"
+	date
 }
 
 export base=$base
