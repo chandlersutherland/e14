@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name=paml
-#SBATCH --partition=savio4_htc
-#SBATCH --qos=minium_htc4_normal
+#SBATCH --partition=savio2
+#SBATCH --qos=savio_normal
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=24
-#SBATCH --time=12:00:00
+#SBATCH --time=72:00:00
 #SBATCH --mail-user=chandlersutherland@berkeley.edu
 #SBATCH --mail-type=ALL
 #SBATCH --error=/global/home/users/chandlersutherland/slurm_stderr/slurm-%j.out
@@ -15,7 +15,7 @@ module load paml
 source activate e14 
 
 base=/global/scratch/users/chandlersutherland/e14/popgen/clades
-clade=$(cat /global/scratch/users/chandlersutherland/e14/popgen/clades.txt)
+clade=$(cat ${clade_file}) #have to export clade file to paml to get it to run 
 
 #make parallel, taking forever 
 PAML_RUN(){

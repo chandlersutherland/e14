@@ -16,7 +16,8 @@ module load parallel
 source activate e14 
 
 base=/global/scratch/users/chandlersutherland/e14/popgen/clades
-clades=$(cat clades2.txt)
+cd /global/scratch/users/chandlersutherland/e14/popgen
+clades="Int10172_376_495_R_128 Int10637_304_324_R_203 Int11708_423_513_L_319 Int11708_423_520_R_59 Int14642_297_414_R_121 Int7765_208_274_R_142  Int7973_410_504_R_207"
 
 #turn into a function that takes in clade as the first argument 
 CODEML_RUN (){
