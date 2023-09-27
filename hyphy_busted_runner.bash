@@ -25,11 +25,11 @@ do
 	alignment=${base}/${clade}/popgenome/${clade}.pal2nal.fas
 	tree=${base}/${clade}/RAxML*.out
 	
-	log_file=${base}/${clade}/hyphy_busted.log
+	log_file=${base}/${clade}/hyphy_busted_internal.log
 	echo "Running Hyphy on $clade"
 	
 	#actually run hyphy in multithreading mode to hopefully speed up 
-	hyphy  busted CPU=24 --alignment ${alignment} --tree ${tree} | tee -a $log_file
+	hyphy  busted CPU=24 --alignment ${alignment} --tree ${tree} --branches Internal | tee -a $log_file
 	
 	
 	#parse out p value  

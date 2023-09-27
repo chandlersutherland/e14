@@ -21,11 +21,11 @@ MEME_RUN(){
 	alignment=${base}/${1}/popgenome/${1}.pal2nal.fas
 	tree=${base}/${1}/RAxML*.out
 	
-	log_file=${base}/${1}/hyphy_meme.log
+	log_file=${base}/${1}/hyphy_meme_internal.log
 	echo "Running Hyphy meme on $clade"
 	
 	#actually run hyphy in multithreading mode to hopefully speed up 
-	hyphy  meme CPU=4 --alignment ${alignment} --tree ${tree} | tee -a $log_file
+	hyphy  meme CPU=4 --alignment ${alignment} --tree ${tree} --branches Internal | tee -a $log_file
 	
 	echo "finished $clade"
 }
