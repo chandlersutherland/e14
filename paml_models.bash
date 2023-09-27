@@ -16,22 +16,23 @@ source activate e14
 
 base=/global/scratch/users/chandlersutherland/e14/popgen/clades
 #clade=$(cat ${clade_file}) #have to export clade file to paml to get it to run 
-
+models='1 2 7 8'
 #make parallel, taking forever 
 PAML_RUN(){
-	cd ${base}/${1}
-	echo "starting ${1}"
+	cd ${base}/${clade}
+	echo "starting ${clade}"
 	date 
-	codeml codeml_m0.ctl 
-	echo "finished codeml $1"
+	codeml codeml_m${1}.ctl 
+	echo "finished codeml ${clade} model ${1}"
 	date
 }
 
-#export base=$base
-#export -f PAML_RUN 
+export base=$base
+export clade=$clade
+export -f PAML_RUN 
 
-#parallel PAML_RUN ::: $clade 
-PAML_RUN $clade 
+parallel PAML_RUN ::: $models
+#PAML_RUN $clade 
 #while read clade
 #do 
 	#actually run codeml
