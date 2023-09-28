@@ -15,34 +15,34 @@ module load parallel
 source activate e14 
 
 base=/global/scratch/users/chandlersutherland/e14/popgen/clades
-output_csv=/global/scratch/users/chandlersutherland/e14/popgen/hyphy_fubar.csv
+#output_csv=/global/scratch/users/chandlersutherland/e14/popgen/hyphy_fubar.csv
 clade=$(cat /global/scratch/users/chandlersutherland/e14/popgen/clades.txt)
-echo "Clade,n_codons,n_pos_sites" > $output_csv
+#echo "Clade,n_codons,n_pos_sites" > $output_csv
 
-FUBAR_RUN(){
+FEL_RUN(){
 	alignment=${base}/${1}/popgenome/${1}.pal2nal.fas
 	tree=${base}/${1}/RAxML*.out
 	
-	log_file=${base}/${1}/hyphy_fel_internal.log
+	log_file=${base}/${1}/hyphy_fel.log
 	echo "Running Hyphy on $clade"
 	
 	#actually run hyphy in multithreading mode to hopefully speed up 
-	hyphy fel CPU=4 --alignment ${alignment} --tree ${tree} --branches Internal| tee -a $log_file
+	hyphy fel CPU=4 --alignment ${alignment} --tree ${tree} | tee -a $log_file
 	
 	#parse out relevant values  
-	n_sites=$(grep 'FUBAR inferred' $log_file | sed 's@^[^0-9]*\([0-9]\+\).*@\1@') 
-	n_codons=$(grep 'Loaded a multiple sequence alignment' $log_file | sed -r 's/([^0-9]*([0-9]*)){2}.*/\2/')
+	#n_sites=$(grep 'FUBAR inferred' $log_file | sed 's@^[^0-9]*\([0-9]\+\).*@\1@') 
+	#n_codons=$(grep 'Loaded a multiple sequence alignment' $log_file | sed -r 's/([^0-9]*([0-9]*)){2}.*/\2/')
 	
 	#write to csv with clade info 
-	echo "${1},${n_codons},${n_sites}" >> $output_csv
+	#echo "${1},${n_codons},${n_sites}" >> $output_csv
 	echo "finished $1"
 }
 
 export base=$base
 export output_csv=$output_csv 
-export -f FUBAR_RUN
+export -f FEL_RUN
 
-parallel FUBAR_RUN ::: $clade 
+parallel FEL_RUN ::: $clade 
 
 #for each clade, identify the codon alignment file and tree, then run hyphy busted
 #while read clade
