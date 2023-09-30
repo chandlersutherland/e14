@@ -15,7 +15,7 @@ module load paml
 source activate e14 
 
 base=/global/scratch/users/chandlersutherland/e14/popgen/clades
-clade=$(cat ${clade_file}) #have to export clade file to paml to get it to run 
+#clade=$(cat ${clade_file}) #have to export clade file to paml to get it to run 
 
 #make parallel, taking forever 
 PAML_RUN(){
@@ -27,11 +27,11 @@ PAML_RUN(){
 	date
 }
 
-export base=$base
-export -f PAML_RUN 
+#export base=$base
+#export -f PAML_RUN 
 
-parallel PAML_RUN ::: $clade 
-
+#parallel PAML_RUN ::: $clade 
+PAML_RUN $clade 
 #while read clade
 #do 
 	#actually run codeml
